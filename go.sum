@@ -6,6 +6,8 @@ github.com/TheBitDrifter/coldbrew v0.0.0-20250314141750-236a1ef7d31d h1:+Lj7mPFR
 github.com/TheBitDrifter/coldbrew v0.0.0-20250314141750-236a1ef7d31d/go.mod h1:vIfJoNnJVb5ZCkx4JjCTFO/cepmErGyP634/3iES+ko=
 github.com/TheBitDrifter/coldbrew v0.0.0-20250317184435-854949fa45b4 h1:+DDLU2nqh2n5SSYEda/4wigXvfLhIRr91JpHbUXFBJo=
 github.com/TheBitDrifter/coldbrew v0.0.0-20250317184435-854949fa45b4/go.mod h1:vIfJoNnJVb5ZCkx4JjCTFO/cepmErGyP634/3iES+ko=
+github.com/TheBitDrifter/coldbrew v0.0.0-20250318163323-92d33a7784f1 h1:gstTan8QY4FbG0C7Ou7vCAq1geBlwJO5aHQPuRASZas=
+github.com/TheBitDrifter/coldbrew v0.0.0-20250318163323-92d33a7784f1/go.mod h1:vIfJoNnJVb5ZCkx4JjCTFO/cepmErGyP634/3iES+ko=
 github.com/TheBitDrifter/mask v0.0.0-20250302170854-74953aa585aa h1:4uVpECsjSHrl8jGNec9CXKj8zL+cranSx1FOVEa3G7E=
 github.com/TheBitDrifter/mask v0.0.0-20250302170854-74953aa585aa/go.mod h1:2Gumixx/FRZwxlwMNCpSr38UTbS5gUSSGdntrSmivGk=
 github.com/TheBitDrifter/table v0.0.0-20250302173100-264081644811 h1:D0ZpB3P/L6nL0Uj70AUg+SAgwuUQKNpZUukdcwwlyhU=

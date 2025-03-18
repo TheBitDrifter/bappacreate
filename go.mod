@@ -4,7 +4,7 @@ go 1.24.1
 
 require (
 	github.com/TheBitDrifter/blueprint v0.0.0-20250312181352-30002bd4eec6
-	github.com/TheBitDrifter/coldbrew v0.0.0-20250317184435-854949fa45b4
+	github.com/TheBitDrifter/coldbrew v0.0.0-20250318163323-92d33a7784f1
 	github.com/TheBitDrifter/tteokbokki v0.0.0-20250314131133-b229fc86d19a
 	github.com/TheBitDrifter/warehouse v0.0.0-20250314130927-1476ce6b114f
 	github.com/hajimehoshi/ebiten/v2 v2.8.6
