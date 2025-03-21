@@ -20,7 +20,6 @@ go install github.com/TheBitDrifter/bappacreate@latest
 # Clone the repository
 git clone https://github.com/TheBitDrifter/bappacreate.git
 cd bappacreate
-
 # Build and install the binary
 go install
 ```
@@ -36,7 +35,6 @@ After installing with `go install`, make sure the Go bin directory is in your PA
    ```
 
 2. Add the Go bin directory to your PATH:
-
    For bash (add to ~/.bashrc):
 
    ```bash
@@ -84,6 +82,12 @@ Create a platformer game:
 bappacreate johndoe/my-platformer --template platformer
 ```
 
+Create a platformer game with LDtk support:
+
+```bash
+bappacreate johndoe/my-ldtk-platformer --template platformer-ldtk
+```
+
 Create a sandbox game:
 
 ```bash
@@ -98,12 +102,15 @@ bappacreate johndoe/my-sandbox-world --template sandbox
 | `topdown-split` | A top-down game with split-screen co-op support |
 | `platformer` | A simple platformer game |
 | `platformer-split` | A platformer game with split-screen co-op support |
+| `platformer-ldtk` | A platformer game with LDtk level editor support |
+| `platformer-split-ldtk` | A platformer game with split-screen co-op and LDtk support |
 | `sandbox` | An open sandbox game environment |
 
 ### Template Structure
 
 - **Standard Templates** (`topdown`, `platformer`, `sandbox`): Single-player games with a standard view.
-- **Split Templates** (`topdown-split`, `platformer-split`): Games with split-screen co-op multiplayer support, allowing two or more players to play simultaneously on the same screen.
+- **Split Templates** (`topdown-split`, `platformer-split`, `platformer-split-ldtk`): Games with split-screen co-op multiplayer support, allowing two or more players to play simultaneously on the same screen.
+- **LDtk Templates** (`platformer-ldtk`, `platformer-split-ldtk`): Games that support the LDtk level editor for easier level design.
 
 ## Project Structure
 

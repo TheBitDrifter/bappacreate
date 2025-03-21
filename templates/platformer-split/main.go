@@ -38,9 +38,10 @@ func main() {
 	)
 
 	// Settings
-	client.SetTitle("Platformer Template")
+	client.SetTitle("Platformer Split Template")
 	client.SetResizable(true)
 	client.SetMinimumLoadTime(8)
+	client.SetCameraBorderSize(5)
 
 	// Register scene One
 	err := client.RegisterScene(

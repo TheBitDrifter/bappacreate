@@ -9,7 +9,6 @@ import (
 type OnGroundClearingSystem struct{}
 
 func (OnGroundClearingSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Define the expiration time in ticks
 	// 15 is a bit of a magic number— what matters is that the value is greater than coyote timer
 	// Systems should also check lastTouch alongside presence to avoid odd behavior
 	const expirationTicks = 15

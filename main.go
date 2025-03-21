@@ -53,6 +53,8 @@ func printUsage() {
 	fmt.Println("Available templates:")
 	fmt.Println("  platformer      - A simple platformer game")
 	fmt.Println("  platformer-split - A platformer game with split-screen co-op support")
+	fmt.Println("  platformer-ldtk - A platformer game with LDtk level editor support")
+	fmt.Println("  platformer-split-ldtk - A platformer game with split-screen co-op and LDtk support")
 	fmt.Println("  topdown         - A top-down perspective game (default)")
 	fmt.Println("  topdown-split   - A top-down game with split-screen co-op support")
 	fmt.Println("  sandbox         - An open sandbox game environment")
