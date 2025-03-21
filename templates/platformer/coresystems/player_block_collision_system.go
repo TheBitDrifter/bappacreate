@@ -53,20 +53,24 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 	); ok {
 
 		playerOnTopOfBlock := collisionResult.IsTopB()
-
-		// Prevents snapping onto terrain when the player is still jumping
-		if playerAlreadyGrounded && onGround.LastTouch != scene.CurrentTick()-1 {
-			playerAlreadyGrounded = false
-		}
-		if playerOnTopOfBlock && playerDynamics.Vel.Y < 0 && !playerAlreadyGrounded {
-			return nil
-		}
+		blockOnTopOfPlayer := collisionResult.IsTop()
 
 		// Determine if ground is sloped
 		n := collisionResult.Normal
 		horizontal := n.X == 0 && n.Y == 1 || n.X == 0 && n.Y == -1
 		vertical := n.X == -1 && n.Y == 0 || n.X == 1 && n.Y == 0
 		isSloped := !horizontal && !vertical
+
+		// Prevents snapping onto terrain when the player is still jumping
+		if playerAlreadyGrounded && onGround.LastTouch != scene.CurrentTick()-1 {
+			playerAlreadyGrounded = false
+		}
+		if playerOnTopOfBlock && playerDynamics.Vel.Y < 0 && !playerAlreadyGrounded && !isSloped {
+			return nil
+		}
+		if blockOnTopOfPlayer && playerDynamics.Vel.Y > 0 {
+			return nil
+		}
 
 		// Vertical resolver to prevent positional sliding on slopes
 		if isSloped {

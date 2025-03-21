@@ -53,6 +53,7 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 	); ok {
 
 		playerOnTopOfBlock := collisionResult.IsTopB()
+		blockOnTopOfPlayer := collisionResult.IsTop()
 
 		// Determine if ground is sloped
 		n := collisionResult.Normal
@@ -65,6 +66,9 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 			playerAlreadyGrounded = false
 		}
 		if playerOnTopOfBlock && playerDynamics.Vel.Y < 0 && !playerAlreadyGrounded && !isSloped {
+			return nil
+		}
+		if blockOnTopOfPlayer && playerDynamics.Vel.Y > 0 {
 			return nil
 		}
 

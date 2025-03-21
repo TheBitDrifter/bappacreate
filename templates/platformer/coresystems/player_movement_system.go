@@ -41,6 +41,8 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 
 	// Query all entities with input buffers
 	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	currentTick := scene.CurrentTick()
+
 	for range cursor.Next() {
 		// --- Gather required components ---
 		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)              // Physics properties
@@ -65,9 +67,10 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 		// --- Check ground status ---
 		// First check if the OnGroundComponent exists and get its value safely
 		isGroundComponentPresent, onGround := components.OnGroundComponent.GetFromCursorSafe(cursor)
+		isGrounded := isGroundComponentPresent && currentTick-1 == onGround.LastTouch
 
 		// Default to airborne movement if no ground component exists
-		if !isGroundComponentPresent {
+		if !isGrounded {
 			// Simple air movement - just move in pressed direction or stop
 			if isMovingHorizontal {
 				dyn.Vel.X = speedX * direction.AsFloat()
@@ -77,28 +80,10 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 			continue
 		}
 
-		currentTick := scene.CurrentTick()
-		// Check if player touched ground on the previous tick (doesn't guarantee current grounded state)
-		touchedGroundLastTick := currentTick-1 == onGround.LastTouch
-		ticksOnGround := currentTick - onGround.LastJump
-
 		// --- Ground snapping logic ---
 		// Apply small downward force to keep player attached to slopes when grounded
 		// Only applies if player has been on ground for a while and touched ground last tick
-		if isGroundComponentPresent && ticksOnGround > 10 && touchedGroundLastTick {
-			dyn.Vel.Y = math.Max(dyn.Vel.Y, snapForce) // Apply downward force
-		}
-
-		// --- Handle in-air movement ---
-		// When in air or just landed this tick, use simplified movement
-		if !isGroundComponentPresent || !touchedGroundLastTick {
-			if isMovingHorizontal {
-				dyn.Vel.X = speedX * direction.AsFloat() // direction.AsFloat() returns -1 for left, 1 for right
-			} else {
-				dyn.Vel.X = 0 // No horizontal movement when no keys pressed
-			}
-			continue // Skip slope handling for airborne players
-		}
+		dyn.Vel.Y = math.Max(dyn.Vel.Y, snapForce) // Apply downward force
 
 		// --- Handle flat ground movement ---
 		// Check if player is on a flat surface (normal pointing straight up)
@@ -134,9 +119,7 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 
 				// Only apply downward velocity after being on ground for a while
 				// This prevents immediate sliding when just landing on a slope
-				if ticksOnGround > 10 {
-					dyn.Vel.Y = slopeDir.Y * speedX
-				}
+				dyn.Vel.Y = slopeDir.Y * speedX
 			}
 		} else {
 			// No movement if not pressing direction keys
