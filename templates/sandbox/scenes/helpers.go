@@ -1,8 +1,6 @@
 package scenes
 
 import (
-	"log"
-
 	blueprintclient "github.com/TheBitDrifter/blueprint/client"
 	blueprintinput "github.com/TheBitDrifter/blueprint/input"
 	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
@@ -15,7 +13,6 @@ func NewPlayer(sto warehouse.Storage) error {
 	playerArchetype, err := sto.NewOrExistingArchetype(
 		ExamplePlayerComposition...,
 	)
-	log.Println("yoooo")
 	err = playerArchetype.Generate(1,
 		blueprintspatial.NewPosition(180, 180),
 		blueprintspatial.NewRectangle(18, 58),
