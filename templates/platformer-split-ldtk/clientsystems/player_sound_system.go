@@ -66,9 +66,8 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 		}
 
 		// Run Sound
-
 		// Must be moving horizontally
-		const minMovementSpeed = 5.0
+		const minMovementSpeed = 20.0
 		if math.Abs(dyn.Vel.X) <= minMovementSpeed {
 			continue
 		}

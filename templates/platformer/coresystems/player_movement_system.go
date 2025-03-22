@@ -74,8 +74,6 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 			// Simple air movement - just move in pressed direction or stop
 			if isMovingHorizontal {
 				dyn.Vel.X = speedX * direction.AsFloat()
-			} else {
-				dyn.Vel.X = 0
 			}
 			continue
 		}
@@ -92,8 +90,6 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 			// Same as air movement on flat ground
 			if isMovingHorizontal {
 				dyn.Vel.X = speedX * direction.AsFloat()
-			} else {
-				dyn.Vel.X = 0
 			}
 			continue // Skip slope handling
 		}
@@ -121,9 +117,6 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 				// This prevents immediate sliding when just landing on a slope
 				dyn.Vel.Y = slopeDir.Y * speedX
 			}
-		} else {
-			// No movement if not pressing direction keys
-			dyn.Vel.X = 0
 		}
 	}
 }

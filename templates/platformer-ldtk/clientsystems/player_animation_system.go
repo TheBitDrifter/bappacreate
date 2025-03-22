@@ -27,7 +27,7 @@ func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 		}
 
 		// Player is moving horizontal and grounded (running)
-		if math.Abs(dyn.Vel.X) > 0 && grounded {
+		if math.Abs(dyn.Vel.X) > 20 && grounded {
 			spriteBlueprint.TryAnimation(animations.RunAnimation)
 
 			// Player is moving down and not grounded (falling)
