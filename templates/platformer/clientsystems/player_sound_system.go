@@ -53,9 +53,8 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 		}
 
 		// Jump sound
-
 		// Gotta have y velocity
-		if dyn.Vel.Y < 5 && onGround.LastJump == currentTick {
+		if dyn.Vel.Y < 20 && onGround.LastJump == currentTick {
 			jumpSound, _ := coldbrew.MaterializeSound(soundBundle, sounds.Jump)
 			player := jumpSound.GetAny()
 

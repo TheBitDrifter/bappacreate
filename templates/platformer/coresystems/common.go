@@ -7,6 +7,7 @@ import (
 
 var DefaultCoreSystems = []blueprint.CoreSystem{
 	GravitySystem{},                      // Apply gravity forces
+	FrictionSystem{},                     // Apply Friction forces
 	PlayerMovementSystem{},               // Apply player input forces
 	tteo_coresystems.IntegrationSystem{}, // Update velocities and positions
 	tteo_coresystems.TransformSystem{},   // Update collision shapes
