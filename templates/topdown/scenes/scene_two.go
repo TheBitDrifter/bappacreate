@@ -1,9 +1,9 @@
 package scenes
 
 import (
-	"github.com/TheBitDrifter/blueprint"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 const SCENE_TWO_NAME = "scene two"

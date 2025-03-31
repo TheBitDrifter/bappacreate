@@ -4,14 +4,14 @@ import (
 	"embed"
 	"log"
 
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_clientsystems"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/actions"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/clientsystems"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/coresystems"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/scenes"
-	"github.com/TheBitDrifter/coldbrew"
-	coldbrew_clientsystems "github.com/TheBitDrifter/coldbrew/clientsystems"
-	coldbrew_rendersystems "github.com/TheBitDrifter/coldbrew/rendersystems"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

@@ -1,9 +1,9 @@
 package coresystems
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/components"
-	"github.com/TheBitDrifter/blueprint"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // IgnorePlatformClearingSystem clears out individual platform ignores that have expired

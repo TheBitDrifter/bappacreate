@@ -231,11 +231,11 @@ func initGoModule(projectName, modulePath string) {
 	runCommand("go", "mod", "init", modulePath)
 
 	// Get required dependencies
-	runCommand("go", "get", "github.com/TheBitDrifter/coldbrew@latest")
-	runCommand("go", "get", "github.com/TheBitDrifter/blueprint@latest")
-	runCommand("go", "get", "github.com/TheBitDrifter/warehouse@latest")
-
-	// The go mod tidy step is removed to let the user handle it themselves
+	runCommand("go", "get", "github.com/TheBitDrifter/bappa/coldbrew@latest")
+	runCommand("go", "get", "github.com/TheBitDrifter/bappa/blueprint@latest")
+	runCommand("go", "get", "github.com/TheBitDrifter/bappa/warehouse@latest")
+	runCommand("go", "get", "github.com/TheBitDrifter/bappa/tteokbokki@latest")
+	runCommand("go", "get", "github.com/TheBitDrifter/bappa/table@latest")
 }
 
 func runCommand(command string, args ...string) {

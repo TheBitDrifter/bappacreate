@@ -2,7 +2,7 @@ package scenes
 
 import (
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/ldtk"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 const SCENE_ONE_NAME = "Scene1"

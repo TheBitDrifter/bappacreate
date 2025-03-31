@@ -4,14 +4,14 @@ import (
 	"embed"
 	"log"
 
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_clientsystems"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/actions"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/clientsystems"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/coresystems"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/scenes"
-	"github.com/TheBitDrifter/coldbrew"
-	coldbrew_clientsystems "github.com/TheBitDrifter/coldbrew/clientsystems"
-	coldbrew_rendersystems "github.com/TheBitDrifter/coldbrew/rendersystems"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 

@@ -141,7 +141,7 @@ go run .
 
 The generator automatically sets up the following dependencies:
 
-- github.com/TheBitDrifter/coldbrew
+- github.com/TheBitDrifter/bappa/coldbrew
 - github.com/TheBitDrifter/blueprint
 - github.com/TheBitDrifter/warehouse
 

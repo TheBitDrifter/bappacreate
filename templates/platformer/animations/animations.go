@@ -1,11 +1,11 @@
 package animations
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	"github.com/TheBitDrifter/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
 )
 
-var IdleAnimation = blueprintclient.AnimationData{
+var IdleAnimation = client.AnimationData{
 	Name:        "idle",
 	RowIndex:    0,
 	FrameCount:  6,
@@ -14,7 +14,7 @@ var IdleAnimation = blueprintclient.AnimationData{
 	Speed:       8,
 }
 
-var RunAnimation = blueprintclient.AnimationData{
+var RunAnimation = client.AnimationData{
 	Name:        "run",
 	RowIndex:    1,
 	FrameCount:  8,
@@ -23,7 +23,7 @@ var RunAnimation = blueprintclient.AnimationData{
 	Speed:       5,
 }
 
-var JumpAnimation = blueprintclient.AnimationData{
+var JumpAnimation = client.AnimationData{
 	Name:           "jump",
 	RowIndex:       2,
 	FrameCount:     3,
@@ -34,7 +34,7 @@ var JumpAnimation = blueprintclient.AnimationData{
 	PositionOffset: vector.Two{X: 0, Y: 10},
 }
 
-var FallAnimation = blueprintclient.AnimationData{
+var FallAnimation = client.AnimationData{
 	Name:           "fall",
 	RowIndex:       3,
 	FrameCount:     3,

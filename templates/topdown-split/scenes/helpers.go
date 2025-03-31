@@ -1,15 +1,15 @@
 package scenes
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/animations"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/components"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/sounds"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // NewPlayer creates a player entity
@@ -26,13 +26,13 @@ func NewPlayers(sto warehouse.Storage, count int) error {
 		}
 
 		err = playerArchetype.Generate(1,
-			blueprintspatial.NewPosition(180, 180),
-			blueprintspatial.NewRectangle(16, 16),
-			blueprintmotion.NewDynamics(10),
-			blueprintspatial.NewDirectionRight(),
-			blueprintinput.InputBuffer{ReceiverIndex: i},
-			blueprintclient.CameraIndex(i),
-			blueprintclient.NewSpriteBundle().
+			spatial.NewPosition(180, 180),
+			spatial.NewRectangle(16, 16),
+			motion.NewDynamics(10),
+			spatial.NewDirectionRight(),
+			input.InputBuffer{ReceiverIndex: i},
+			client.CameraIndex(i),
+			client.NewSpriteBundle().
 				AddSprite(spriteSheetParentPath+"idle.png", true).
 				WithAnimations(animations.Down, animations.Side, animations.DownSide, animations.UpSide, animations.Up).
 				SetActiveAnimation(animations.Down).
@@ -41,7 +41,7 @@ func NewPlayers(sto warehouse.Storage, count int) error {
 				WithAnimations(animations.Down, animations.Side, animations.DownSide, animations.UpSide, animations.Up).
 				SetActiveAnimation(animations.Down).
 				WithOffset(vector.Two{X: -24, Y: -32}),
-			blueprintclient.NewSoundBundle().AddSoundFromConfig(sounds.Run),
+			client.NewSoundBundle().AddSoundFromConfig(sounds.Run),
 			components.NewDirectionDown(),
 		)
 		if err != nil {
@@ -61,10 +61,10 @@ func NewTreeProp(sto warehouse.Storage, x, y float64) error {
 		return err
 	}
 	return treePropArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(10, 10),
-		blueprintmotion.NewDynamics(0),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(10, 10),
+		motion.NewDynamics(0),
+		client.NewSpriteBundle().
 			AddSprite("props/tree.png", true).
 			WithOffset(vector.Two{X: -45, Y: -130}),
 	)
@@ -79,10 +79,10 @@ func NewMoveableStatueProp(sto warehouse.Storage, x, y float64) error {
 		return err
 	}
 	return statueArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(28, 20),
-		blueprintmotion.NewDynamics(10),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(28, 20),
+		motion.NewDynamics(10),
+		client.NewSpriteBundle().
 			AddSprite("props/statue.png", true).
 			WithOffset(vector.Two{X: -17, Y: -60}),
 	)
@@ -97,9 +97,9 @@ func NewBlockTerrain(sto warehouse.Storage, x, y, w, h float64) error {
 		return err
 	}
 	return statueArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(w, h),
-		blueprintmotion.NewDynamics(0),
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(w, h),
+		motion.NewDynamics(0),
 	)
 }
 
@@ -115,8 +115,8 @@ func NewCollisionPlayerTransfer(
 		return err
 	}
 	return collisionPlayerTransferArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(w, h),
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(w, h),
 		components.PlayerSceneTransfer{
 			Dest: target,
 			X:    playerTargetX,
@@ -131,5 +131,5 @@ func NewFantasyMusic(sto warehouse.Storage) error {
 	if err != nil {
 		return err
 	}
-	return musicArche.Generate(1, blueprintclient.NewSoundBundle().AddSoundFromConfig(sounds.Music))
+	return musicArche.Generate(1, client.NewSoundBundle().AddSoundFromConfig(sounds.Music))
 }

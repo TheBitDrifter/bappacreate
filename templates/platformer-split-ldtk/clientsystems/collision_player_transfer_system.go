@@ -1,13 +1,12 @@
 package clientsystems
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/components"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/tteokbokki/spatial"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 type CollisionPlayerTransferSystem struct{}
@@ -25,14 +24,14 @@ func (CollisionPlayerTransferSystem) Run(cli coldbrew.LocalClient, scene coldbre
 
 	// Query the transfer collision entities
 	collisionTransferQuery := warehouse.Factory.NewQuery().And(
-		blueprintspatial.Components.Shape,
+		spatial.Components.Shape,
 		components.PlayerSceneTransferComponent,
 	)
 
 	// Query player(s)
 	playerWithShapeQuery := warehouse.Factory.NewQuery().And(
-		blueprintspatial.Components.Shape,
-		blueprintinput.Components.InputBuffer,
+		spatial.Components.Shape,
+		input.Components.InputBuffer,
 	)
 
 	collisionTransferCursor := scene.NewCursor(collisionTransferQuery)
@@ -42,15 +41,15 @@ func (CollisionPlayerTransferSystem) Run(cli coldbrew.LocalClient, scene coldbre
 	for range collisionTransferCursor.Next() {
 
 		// Get pos and collider/shape
-		transferPos := blueprintspatial.Components.Position.GetFromCursor(collisionTransferCursor)
-		transferCollider := blueprintspatial.Components.Shape.GetFromCursor(collisionTransferCursor)
+		transferPos := spatial.Components.Position.GetFromCursor(collisionTransferCursor)
+		transferCollider := spatial.Components.Shape.GetFromCursor(collisionTransferCursor)
 
 		// Inner loop
 		for range playerWithShapeCursor.Next() {
 
 			// Get pos and collider/shape
-			playerPos := blueprintspatial.Components.Position.GetFromCursor(playerWithShapeCursor)
-			playerCollider := blueprintspatial.Components.Shape.GetFromCursor(playerWithShapeCursor)
+			playerPos := spatial.Components.Position.GetFromCursor(playerWithShapeCursor)
+			playerCollider := spatial.Components.Shape.GetFromCursor(playerWithShapeCursor)
 
 			// Check for collision
 			if ok, _ := spatial.Detector.Check(*playerCollider, *transferCollider, playerPos, transferPos); ok {
@@ -67,12 +66,12 @@ func (CollisionPlayerTransferSystem) Run(cli coldbrew.LocalClient, scene coldbre
 				}
 				pending = append(pending, transfer)
 				// Update the player pos
-				playerPos := blueprintspatial.Components.Position.GetFromCursor(playerWithShapeCursor)
+				playerPos := spatial.Components.Position.GetFromCursor(playerWithShapeCursor)
 				playerPos.X = sceneTransfer.X
 				playerPos.Y = sceneTransfer.Y
 
 				// Update the camera pos
-				camIndex := int(*blueprintclient.Components.CameraIndex.GetFromCursor(playerWithShapeCursor))
+				camIndex := int(*client.Components.CameraIndex.GetFromCursor(playerWithShapeCursor))
 				cam := cli.Cameras()[camIndex]
 				// Get the cameras local scene position
 				_, cameraScenePosition := cam.Positions()

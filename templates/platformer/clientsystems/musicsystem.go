@@ -1,11 +1,11 @@
 package clientsystems
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer/components"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer/sounds"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 type MusicSystem struct{}
@@ -19,7 +19,7 @@ func (sys MusicSystem) Run(lc coldbrew.LocalClient, scene coldbrew.Scene) error 
 
 	// There's only one but iterate nonetheless
 	for range cursor.Next() {
-		soundBundle := blueprintclient.Components.SoundBundle.GetFromCursor(cursor)
+		soundBundle := client.Components.SoundBundle.GetFromCursor(cursor)
 
 		sound, err := coldbrew.MaterializeSound(soundBundle, sounds.Music)
 		if err != nil {

@@ -1,7 +1,7 @@
 package actions
 
 import (
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
 )
 
-var ExampleAction = blueprintinput.NewInput()
+var ExampleAction = input.NewInput()

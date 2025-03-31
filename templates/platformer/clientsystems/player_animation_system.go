@@ -3,12 +3,12 @@ package clientsystems
 import (
 	"math"
 
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer/animations"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer/components"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	"github.com/TheBitDrifter/coldbrew"
 )
 
 type PlayerAnimationSystem struct{}
@@ -18,9 +18,9 @@ func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 
 	for range cursor.Next() {
 		// Get state
-		bundle := blueprintclient.Components.SpriteBundle.GetFromCursor(cursor)
+		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
 		spriteBlueprint := &bundle.Blueprints[0]
-		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
 		grounded, onGround := components.OnGroundComponent.GetFromCursorSafe(cursor)
 		if grounded {
 			grounded = scene.CurrentTick() == onGround.LastTouch

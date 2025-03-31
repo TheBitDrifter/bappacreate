@@ -1,14 +1,14 @@
 package sounds
 
-import blueprintclient "github.com/TheBitDrifter/blueprint/client"
+import "github.com/TheBitDrifter/bappa/blueprint/client"
 
-var Run = blueprintclient.SoundConfig{
+var Run = client.SoundConfig{
 	Path: "run.wav",
 	// We could increase the count for two players, but it sounds too clustered in my opinion
 	AudioPlayerCount: 1,
 }
 
-var Music = blueprintclient.SoundConfig{
+var Music = client.SoundConfig{
 	Path:             "fantasy_music.wav",
 	AudioPlayerCount: 1,
 }

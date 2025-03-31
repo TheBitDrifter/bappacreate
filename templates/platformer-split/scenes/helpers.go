@@ -1,16 +1,16 @@
 package scenes
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/animations"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/components"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/sounds"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // NewPlayer creates a player entity for the scene
@@ -26,20 +26,20 @@ func NewPlayers(sto warehouse.Storage, count int) error {
 			sheetPath = "characters/box_man_sheet_alt.png"
 		}
 		err = playerArchetype.Generate(1,
-			blueprintspatial.NewPosition(float64(100*i), 180),
-			blueprintspatial.NewRectangle(18, 58),
-			blueprintmotion.NewDynamics(10),
-			blueprintspatial.NewDirectionRight(),
-			blueprintinput.InputBuffer{ReceiverIndex: i},
-			blueprintclient.CameraIndex(i),
-			blueprintclient.NewSpriteBundle().
+			spatial.NewPosition(float64(100*i), 180),
+			spatial.NewRectangle(18, 58),
+			motion.NewDynamics(10),
+			spatial.NewDirectionRight(),
+			input.InputBuffer{ReceiverIndex: i},
+			client.CameraIndex(i),
+			client.NewSpriteBundle().
 				AddSprite(sheetPath, true).
 				WithAnimations(animations.IdleAnimation, animations.RunAnimation, animations.FallAnimation, animations.JumpAnimation).
 				SetActiveAnimation(animations.IdleAnimation).
 				WithOffset(vector.Two{X: -72, Y: -59}).
 				WithPriority(10).
 				WithCustomRenderer(),
-			blueprintclient.NewSoundBundle().
+			client.NewSoundBundle().
 				AddSoundFromConfig(sounds.Run).
 				AddSoundFromConfig(sounds.Jump).
 				AddSoundFromConfig(sounds.Land),
@@ -62,16 +62,16 @@ func NewInvisibleWalls(sto warehouse.Storage, width, height int) error {
 	}
 	// Wall left (invisible)
 	err = terrainArchetype.Generate(1,
-		blueprintspatial.NewRectangle(10, float64(height+300)),
-		blueprintspatial.NewPosition(0, 0),
+		spatial.NewRectangle(10, float64(height+300)),
+		spatial.NewPosition(0, 0),
 	)
 	if err != nil {
 		return err
 	}
 	// Wall right (invisible)
 	return terrainArchetype.Generate(1,
-		blueprintspatial.NewRectangle(10, float64(height+300)),
-		blueprintspatial.NewPosition(float64(width), 0),
+		spatial.NewRectangle(10, float64(height+300)),
+		spatial.NewPosition(float64(width), 0),
 	)
 }
 
@@ -79,7 +79,7 @@ func NewInvisibleWalls(sto warehouse.Storage, width, height int) error {
 func NewFloor(sto warehouse.Storage, y float64) error {
 	// Add a sprite
 	composition := []warehouse.Component{
-		blueprintclient.Components.SpriteBundle,
+		client.Components.SpriteBundle,
 	}
 
 	// Compose the archetype with the sprite and block composition
@@ -92,9 +92,9 @@ func NewFloor(sto warehouse.Storage, y float64) error {
 	}
 	// Floor
 	return terrainArchetype.Generate(1,
-		blueprintspatial.NewPosition(1500, y),
-		blueprintspatial.NewRectangle(4000, 50),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(1500, y),
+		spatial.NewRectangle(4000, 50),
+		client.NewSpriteBundle().
 			AddSprite("terrain/floor.png", true).
 			WithOffset(vector.Two{X: -1500, Y: -25}),
 	)
@@ -104,7 +104,7 @@ func NewFloor(sto warehouse.Storage, y float64) error {
 func NewBlock(sto warehouse.Storage, x, y float64) error {
 	// Add a sprite
 	composition := []warehouse.Component{
-		blueprintclient.Components.SpriteBundle,
+		client.Components.SpriteBundle,
 	}
 
 	// Compose the archetype with the sprite and block composition
@@ -117,9 +117,9 @@ func NewBlock(sto warehouse.Storage, x, y float64) error {
 	}
 	// Block
 	return terrainArchetype.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(64, 75),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(64, 75),
+		client.NewSpriteBundle().
 			AddSprite("terrain/block.png", true).
 			WithOffset(vector.Two{X: -33, Y: -38}),
 	)
@@ -132,10 +132,10 @@ func NewPlatform(sto warehouse.Storage, x, y float64) error {
 		return err
 	}
 	return platformArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
+		spatial.NewPosition(x, y),
 		// Triangles for one way platform
-		blueprintspatial.NewTriangularPlatform(144, 16),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewTriangularPlatform(144, 16),
+		client.NewSpriteBundle().
 			AddSprite("terrain/platform.png", true).
 			WithOffset(vector.Two{X: -72, Y: -8}),
 	)
@@ -148,11 +148,11 @@ func NewPlatformRotated(sto warehouse.Storage, x, y, rotation float64) error {
 		return err
 	}
 	return platformArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.Rotation(rotation),
+		spatial.NewPosition(x, y),
+		spatial.Rotation(rotation),
 		// Triangles for one way platform
-		blueprintspatial.NewTriangularPlatform(144, 16),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewTriangularPlatform(144, 16),
+		client.NewSpriteBundle().
 			AddSprite("terrain/platform.png", true).
 			WithOffset(vector.Two{X: -72, Y: -8}),
 	)
@@ -162,7 +162,7 @@ func NewPlatformRotated(sto warehouse.Storage, x, y, rotation float64) error {
 func NewRamp(sto warehouse.Storage, x, y float64) error {
 	// Add a sprite
 	composition := []warehouse.Component{
-		blueprintclient.Components.SpriteBundle,
+		client.Components.SpriteBundle,
 	}
 
 	// Compose the archetype with the sprite and block composition
@@ -173,9 +173,9 @@ func NewRamp(sto warehouse.Storage, x, y float64) error {
 	}
 
 	return rampArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewDoubleRamp(250, 46, 0.2),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewDoubleRamp(250, 46, 0.2),
+		client.NewSpriteBundle().
 			AddSprite("terrain/ramp.png", true).
 			WithOffset(vector.Two{X: -125, Y: -22}),
 	)
@@ -204,7 +204,7 @@ func NewJazzMusic(sto warehouse.Storage) error {
 	if err != nil {
 		return err
 	}
-	return musicArche.Generate(1, blueprintclient.NewSoundBundle().AddSoundFromPath("music.wav"))
+	return musicArche.Generate(1, client.NewSoundBundle().AddSoundFromPath("music.wav"))
 }
 
 // NewCollisionPlayerTransfer creates an collidable entity/shape that will transfer the player
@@ -219,8 +219,8 @@ func NewCollisionPlayerTransfer(
 		return err
 	}
 	return collisionPlayerTransferArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(w, h),
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(w, h),
 		components.PlayerSceneTransfer{
 			Dest: target,
 			X:    playerTargetX,

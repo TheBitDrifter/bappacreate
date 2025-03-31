@@ -1,23 +1,23 @@
 package sounds
 
-import blueprintclient "github.com/TheBitDrifter/blueprint/client"
+import "github.com/TheBitDrifter/bappa/blueprint/client"
 
-var Run = blueprintclient.SoundConfig{
+var Run = client.SoundConfig{
 	Path:             "run.wav",
 	AudioPlayerCount: 1, // Too much running sounds clustered, keep at one
 }
 
-var Jump = blueprintclient.SoundConfig{
+var Jump = client.SoundConfig{
 	Path:             "jump.wav",
 	AudioPlayerCount: 2, // Increase to player count
 }
 
-var Land = blueprintclient.SoundConfig{
+var Land = client.SoundConfig{
 	Path:             "land.wav",
 	AudioPlayerCount: 2, // Increase to player count
 }
 
-var Music = blueprintclient.SoundConfig{
+var Music = client.SoundConfig{
 	Path:             "music.wav",
 	AudioPlayerCount: 1,
 }

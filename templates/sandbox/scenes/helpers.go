@@ -1,11 +1,11 @@
 package scenes
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 // NewPlayer creates a 'player' entity for the scene
@@ -14,12 +14,12 @@ func NewPlayer(sto warehouse.Storage) error {
 		ExamplePlayerComposition...,
 	)
 	err = playerArchetype.Generate(1,
-		blueprintspatial.NewPosition(180, 180),
-		blueprintspatial.NewRectangle(18, 58),
-		blueprintmotion.NewDynamics(10),
-		blueprintspatial.NewDirectionRight(),
-		blueprintinput.InputBuffer{ReceiverIndex: 0},
-		blueprintclient.CameraIndex(0),
+		spatial.NewPosition(180, 180),
+		spatial.NewRectangle(18, 58),
+		motion.NewDynamics(10),
+		spatial.NewDirectionRight(),
+		input.InputBuffer{ReceiverIndex: 0},
+		client.CameraIndex(0),
 	)
 	if err != nil {
 		return err

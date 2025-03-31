@@ -1,8 +1,8 @@
 package sounds
 
-import blueprintclient "github.com/TheBitDrifter/blueprint/client"
+import "github.com/TheBitDrifter/bappa/blueprint/client"
 
-var ExampleSound = blueprintclient.SoundConfig{
+var ExampleSound = client.SoundConfig{
 	Path:             "example.wav", // file does not exist
 	AudioPlayerCount: 1,
 }

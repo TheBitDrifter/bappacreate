@@ -1,16 +1,16 @@
 package scenes
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/animations"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/components"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/sounds"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // NewPlayer creates a player entity for the scene
@@ -19,19 +19,19 @@ func NewPlayer(x, y float64, sto warehouse.Storage) error {
 		PlayerComposition...,
 	)
 	err = playerArchetype.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(18, 58),
-		blueprintmotion.NewDynamics(10),
-		blueprintspatial.NewDirectionRight(),
-		blueprintinput.InputBuffer{ReceiverIndex: 0},
-		blueprintclient.CameraIndex(0),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(18, 58),
+		motion.NewDynamics(10),
+		spatial.NewDirectionRight(),
+		input.InputBuffer{ReceiverIndex: 0},
+		client.CameraIndex(0),
+		client.NewSpriteBundle().
 			AddSprite("characters/box_man_sheet.png", true).
 			WithAnimations(animations.IdleAnimation, animations.RunAnimation, animations.FallAnimation, animations.JumpAnimation).
 			SetActiveAnimation(animations.IdleAnimation).
 			WithOffset(vector.Two{X: -72, Y: -59}).
 			WithPriority(20),
-		blueprintclient.NewSoundBundle().
+		client.NewSoundBundle().
 			AddSoundFromConfig(sounds.Run).
 			AddSoundFromConfig(sounds.Jump).
 			AddSoundFromConfig(sounds.Land),
@@ -49,11 +49,11 @@ func NewPlatformRotated(sto warehouse.Storage, x, y, rotation float64) error {
 		return err
 	}
 	return platformArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.Rotation(rotation),
+		spatial.NewPosition(x, y),
+		spatial.Rotation(rotation),
 		// Triangles for one way platform
-		blueprintspatial.NewTriangularPlatform(144, 16),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewTriangularPlatform(144, 16),
+		client.NewSpriteBundle().
 			AddSprite("terrain/platform.png", true).
 			WithOffset(vector.Two{X: -72, Y: -8}),
 	)
@@ -63,7 +63,7 @@ func NewPlatformRotated(sto warehouse.Storage, x, y, rotation float64) error {
 func NewRamp(sto warehouse.Storage, x, y float64) error {
 	// Add a sprite
 	composition := []warehouse.Component{
-		blueprintclient.Components.SpriteBundle,
+		client.Components.SpriteBundle,
 	}
 
 	// Compose the archetype with the sprite and block composition
@@ -74,9 +74,9 @@ func NewRamp(sto warehouse.Storage, x, y float64) error {
 	}
 
 	return rampArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewDoubleRamp(250, 46, 0.2),
-		blueprintclient.NewSpriteBundle().
+		spatial.NewPosition(x, y),
+		spatial.NewDoubleRamp(250, 46, 0.2),
+		client.NewSpriteBundle().
 			AddSprite("terrain/ramp.png", true).
 			WithOffset(vector.Two{X: -125, Y: -22}),
 	)
@@ -105,7 +105,7 @@ func NewJazzMusic(sto warehouse.Storage) error {
 	if err != nil {
 		return err
 	}
-	return musicArche.Generate(1, blueprintclient.NewSoundBundle().AddSoundFromPath("music.wav"))
+	return musicArche.Generate(1, client.NewSoundBundle().AddSoundFromPath("music.wav"))
 }
 
 // NewCollisionPlayerTransfer creates an collidable entity/shape that will transfer the player
@@ -120,8 +120,8 @@ func NewCollisionPlayerTransfer(
 		return err
 	}
 	return collisionPlayerTransferArche.Generate(1,
-		blueprintspatial.NewPosition(x, y),
-		blueprintspatial.NewRectangle(w, h),
+		spatial.NewPosition(x, y),
+		spatial.NewRectangle(w, h),
 		components.PlayerSceneTransfer{
 			Dest: target,
 			X:    playerTargetX,

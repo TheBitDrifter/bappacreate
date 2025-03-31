@@ -3,14 +3,14 @@ package coresystems
 import (
 	"math"
 
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/actions"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/components"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // PlayerMovementSystem handles all player movement mechanics including horizontal
@@ -45,9 +45,9 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 
 	for range cursor.Next() {
 		// --- Gather required components ---
-		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)              // Physics properties
-		incomingInputs := blueprintinput.Components.InputBuffer.GetFromCursor(cursor) // User inputs
-		direction := blueprintspatial.Components.Direction.GetFromCursor(cursor)      // Facing direction
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)              // Physics properties
+		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor) // User inputs
+		direction := spatial.Components.Direction.GetFromCursor(cursor)      // Facing direction
 
 		// --- Process left/right inputs ---
 		// Check and consume directional inputs
@@ -134,7 +134,7 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 
 	// Create query for players eligible to jump (have ground and input components)
 	playersEligibleToJumpQuery := warehouse.Factory.NewQuery()
-	playersEligibleToJumpQuery.And(components.OnGroundComponent, blueprintinput.Components.InputBuffer)
+	playersEligibleToJumpQuery.And(components.OnGroundComponent, input.Components.InputBuffer)
 
 	// Get all entities that match the query
 	cursor := scene.NewCursor(playersEligibleToJumpQuery)
@@ -142,8 +142,8 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 
 	for range cursor.Next() {
 		// Get required components
-		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)
-		incomingInputs := blueprintinput.Components.InputBuffer.GetFromCursor(cursor)
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
+		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
 
 		// OnGroundComponent is guaranteed to exist because of our query
 		onGround := components.OnGroundComponent.GetFromCursor(cursor)
@@ -192,7 +192,7 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 func (PlayerMovementSystem) handleDown(scene blueprint.Scene) error {
 	// Create query for players eligible to drop (have ground and input components)
 	playersEligibleToDropQuery := warehouse.Factory.NewQuery()
-	playersEligibleToDropQuery.And(components.OnGroundComponent, blueprintinput.Components.InputBuffer)
+	playersEligibleToDropQuery.And(components.OnGroundComponent, input.Components.InputBuffer)
 
 	cursor := scene.NewCursor(playersEligibleToDropQuery)
 	currentTick := scene.CurrentTick()
@@ -219,7 +219,7 @@ func (PlayerMovementSystem) handleDown(scene blueprint.Scene) error {
 		}
 
 		// Get input component
-		incomingInputs := blueprintinput.Components.InputBuffer.GetFromCursor(cursor)
+		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
 
 		// Check for down action
 		if stampedInput, inputReceived := incomingInputs.ConsumeInput(actions.Down); inputReceived {
