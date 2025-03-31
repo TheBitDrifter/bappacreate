@@ -1,11 +1,11 @@
 package clientsystems
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown/components"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown/sounds"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 type PlayerSoundSystem struct{}
@@ -16,8 +16,8 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 	// Create a query for players that can play sounds and are moving
 	playersMovingWithSounds := warehouse.Factory.NewQuery()
 	playersMovingWithSounds.And(
-		blueprintclient.Components.SoundBundle, // Has sounds
-		components.IsMovingComponent,           // Is moving
+		client.Components.SoundBundle, // Has sounds
+		components.IsMovingComponent,  // Is moving
 	)
 
 	// Get all entities that match the query
@@ -25,7 +25,7 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 
 	// Iterate
 	for range cursor.Next() {
-		soundBundle := blueprintclient.Components.SoundBundle.GetFromCursor(cursor)
+		soundBundle := client.Components.SoundBundle.GetFromCursor(cursor)
 
 		// Get the sound from the bundle
 		runSound, err := coldbrew.MaterializeSound(soundBundle, sounds.Run)

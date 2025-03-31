@@ -1,8 +1,8 @@
 package coresystems
 
 import (
-	"github.com/TheBitDrifter/blueprint"
-	tteo_coresystems "github.com/TheBitDrifter/tteokbokki/coresystems"
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/tteokbokki/tteo_coresystems"
 )
 
 var DefaultCoreSystems = []blueprint.CoreSystem{

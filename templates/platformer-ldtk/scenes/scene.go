@@ -1,13 +1,13 @@
 package scenes
 
 import (
-	"github.com/TheBitDrifter/blueprint"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/warehouse"
 
-	blueprintldtk "github.com/TheBitDrifter/blueprint/ldtk"
+	"github.com/TheBitDrifter/bappa/blueprint/ldtk"
 )
 
-var entityRegistry = blueprintldtk.NewLDtkEntityRegistry()
+var entityRegistry = ldtk.NewLDtkEntityRegistry()
 
 // Local scene object makes it easier to organize scene plans
 type Scene struct {
@@ -19,13 +19,13 @@ type Scene struct {
 // Registering custom LDTK entities
 func init() {
 	// Player start position handler
-	entityRegistry.Register("PlayerStart", func(entity *blueprintldtk.LDtkEntityInstance, sto warehouse.Storage) error {
+	entityRegistry.Register("PlayerStart", func(entity *ldtk.LDtkEntityInstance, sto warehouse.Storage) error {
 		// Create the player at the position defined in LDtk
 		return NewPlayer(float64(entity.Position[0]), float64(entity.Position[1]), sto)
 	})
 
 	// Scene transition trigger handler
-	entityRegistry.Register("SceneTransfer", func(entity *blueprintldtk.LDtkEntityInstance, sto warehouse.Storage) error {
+	entityRegistry.Register("SceneTransfer", func(entity *ldtk.LDtkEntityInstance, sto warehouse.Storage) error {
 		// Extract properties from LDtk entity
 		targetScene := entity.StringFieldOr("targetScene", SCENE_TWO_NAME) // Default to scene two if not specified
 		targetX := entity.FloatFieldOr("targetX", 20.0)
@@ -48,7 +48,7 @@ func init() {
 	})
 
 	// Ramp
-	entityRegistry.Register("Ramp", func(entity *blueprintldtk.LDtkEntityInstance, sto warehouse.Storage) error {
+	entityRegistry.Register("Ramp", func(entity *ldtk.LDtkEntityInstance, sto warehouse.Storage) error {
 		return NewRamp(
 			sto,
 			float64(entity.Position[0]),
@@ -57,7 +57,7 @@ func init() {
 	})
 
 	// RotatedPlatform
-	entityRegistry.Register("RotatedPlatform", func(entity *blueprintldtk.LDtkEntityInstance, sto warehouse.Storage) error {
+	entityRegistry.Register("RotatedPlatform", func(entity *ldtk.LDtkEntityInstance, sto warehouse.Storage) error {
 		return NewPlatformRotated(
 			sto,
 			float64(entity.Position[0]),

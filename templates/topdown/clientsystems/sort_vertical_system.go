@@ -1,10 +1,10 @@
 package clientsystems
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 type SortVerticalSystem struct{}
@@ -14,9 +14,9 @@ type SortVerticalSystem struct{}
 func (SortVerticalSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) error {
 	// Query all non background spriteBundles
 	query := warehouse.Factory.NewQuery().And(
-		blueprintclient.Components.SpriteBundle,
-		blueprintspatial.Components.Position,
-		warehouse.Factory.NewQuery().Not(blueprintclient.Components.ParallaxBackground),
+		client.Components.SpriteBundle,
+		spatial.Components.Position,
+		warehouse.Factory.NewQuery().Not(client.Components.ParallaxBackground),
 	)
 
 	// Make a cursor from the query
@@ -25,8 +25,8 @@ func (SortVerticalSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) er
 	// Iterate
 	for range cursor.Next() {
 		// Get the position and sprite bundle
-		pos := blueprintspatial.Components.Position.GetFromCursor(cursor)
-		bundle := blueprintclient.Components.SpriteBundle.GetFromCursor(cursor)
+		pos := spatial.Components.Position.GetFromCursor(cursor)
+		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
 
 		// Assign priority based on posY
 		priority := pos.Y

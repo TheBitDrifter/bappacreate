@@ -1,10 +1,10 @@
 package animations
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
 )
 
-var Up = blueprintclient.AnimationData{
+var Up = client.AnimationData{
 	Name:        "up",
 	RowIndex:    3,
 	FrameCount:  8,
@@ -13,7 +13,7 @@ var Up = blueprintclient.AnimationData{
 	Speed:       8,
 }
 
-var Down = blueprintclient.AnimationData{
+var Down = client.AnimationData{
 	Name:        "down",
 	RowIndex:    0,
 	FrameCount:  8,
@@ -22,7 +22,7 @@ var Down = blueprintclient.AnimationData{
 	Speed:       8,
 }
 
-var UpSide = blueprintclient.AnimationData{
+var UpSide = client.AnimationData{
 	Name:        "upside",
 	RowIndex:    4,
 	FrameCount:  8,
@@ -31,7 +31,7 @@ var UpSide = blueprintclient.AnimationData{
 	Speed:       8,
 }
 
-var DownSide = blueprintclient.AnimationData{
+var DownSide = client.AnimationData{
 	Name:        "downside",
 	RowIndex:    5,
 	FrameCount:  8,
@@ -43,7 +43,7 @@ var DownSide = blueprintclient.AnimationData{
 // Note: downside and side are the same because I could only find a 6
 // directional sprite. If we had an 8 directional sprite we could use a 4th
 // animation here
-var Side = blueprintclient.AnimationData{
+var Side = client.AnimationData{
 	Name:        "side",
 	RowIndex:    5,
 	FrameCount:  8,

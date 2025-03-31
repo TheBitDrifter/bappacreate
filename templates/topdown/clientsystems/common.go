@@ -1,7 +1,7 @@
 package clientsystems
 
 import (
-	"github.com/TheBitDrifter/coldbrew"
+	"github.com/TheBitDrifter/bappa/coldbrew"
 )
 
 var DefaultClientSystems = []coldbrew.ClientSystem{

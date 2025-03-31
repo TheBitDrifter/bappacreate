@@ -1,10 +1,10 @@
 package animations
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
 )
 
-var ExampleAnimation = blueprintclient.AnimationData{
+var ExampleAnimation = client.AnimationData{
 	Name:        "example",
 	RowIndex:    0,
 	FrameCount:  0,

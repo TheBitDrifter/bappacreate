@@ -1,9 +1,8 @@
 package coresystems
 
 import (
-	"github.com/TheBitDrifter/blueprint"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	"github.com/TheBitDrifter/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
 )
 
 const (
@@ -18,7 +17,7 @@ func (FrictionSystem) Run(scene blueprint.Scene, dt float64) error {
 	cursor := scene.NewCursor(blueprint.Queries.Dynamics)
 	for range cursor.Next() {
 		// Get the dynamics
-		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
 		friction := motion.Forces.Generator.NewHorizontalFrictionForce(dyn.Vel, DEFAULT_FRICTION)
 		motion.Forces.AddForce(dyn, friction)
 

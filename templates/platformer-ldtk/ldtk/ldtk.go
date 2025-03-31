@@ -4,14 +4,14 @@ import (
 	"embed"
 	"log"
 
-	blueprintldtk "github.com/TheBitDrifter/blueprint/ldtk"
+	"github.com/TheBitDrifter/bappa/blueprint/ldtk"
 )
 
 //go:embed data.ldtk
 var data embed.FS
 
-var DATA = func() *blueprintldtk.LDtkProject {
-	project, err := blueprintldtk.Parse(data, "./ldtk/data.ldtk")
+var DATA = func() *ldtk.LDtkProject {
+	project, err := ldtk.Parse(data, "./ldtk/data.ldtk")
 	if err != nil {
 		log.Fatal(err)
 	}

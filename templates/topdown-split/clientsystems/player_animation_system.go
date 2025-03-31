@@ -1,11 +1,11 @@
 package clientsystems
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/coldbrew"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/animations"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/components"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	"github.com/TheBitDrifter/coldbrew"
 )
 
 type PlayerAnimationSystem struct{}
@@ -19,7 +19,7 @@ func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 	for range cursor.Next() {
 		// Get components
 		direction8 := components.DirectionEightComponent.GetFromCursor(cursor)
-		bundle := blueprintclient.Components.SpriteBundle.GetFromCursor(cursor)
+		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
 		playerMoving := components.IsMovingComponent.CheckCursor(cursor)
 		spriteBlueprint := &bundle.Blueprints[PLAYER_IDLE_SHEET_INDEX]
 

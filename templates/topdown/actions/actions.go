@@ -1,13 +1,13 @@
 package actions
 
 import (
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
 )
 
 // Standard Movement Actions
 var (
-	Left  = blueprintinput.NewInput()
-	Right = blueprintinput.NewInput()
-	Up    = blueprintinput.NewInput()
-	Down  = blueprintinput.NewInput()
+	Left  = input.NewInput()
+	Right = input.NewInput()
+	Up    = input.NewInput()
+	Down  = input.NewInput()
 )

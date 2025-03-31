@@ -1,6 +1,6 @@
 package scenes
 
-import "github.com/TheBitDrifter/warehouse"
+import "github.com/TheBitDrifter/bappa/warehouse"
 
 const SCENE_TWO_NAME = "scene two"
 

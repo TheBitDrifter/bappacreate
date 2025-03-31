@@ -1,7 +1,7 @@
 package scenes
 
 import (
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 const EXAMPLE_SCENE_NAME = "scene one"

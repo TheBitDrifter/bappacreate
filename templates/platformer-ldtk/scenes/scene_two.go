@@ -3,8 +3,8 @@ package scenes
 import (
 	"log"
 
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/ldtk"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 const SCENE_TWO_NAME = "Scene2"

@@ -1,20 +1,20 @@
 package scenes
 
 import (
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 var ExamplePlayerComposition = []warehouse.Component{
-	blueprintspatial.Components.Position,
-	blueprintclient.Components.SpriteBundle,
-	blueprintspatial.Components.Direction,
-	blueprintinput.Components.InputBuffer,
-	blueprintclient.Components.CameraIndex,
-	blueprintspatial.Components.Shape,
-	blueprintmotion.Components.Dynamics,
-	blueprintclient.Components.SoundBundle,
+	spatial.Components.Position,
+	client.Components.SpriteBundle,
+	spatial.Components.Direction,
+	input.Components.InputBuffer,
+	client.Components.CameraIndex,
+	spatial.Components.Shape,
+	motion.Components.Dynamics,
+	client.Components.SoundBundle,
 }

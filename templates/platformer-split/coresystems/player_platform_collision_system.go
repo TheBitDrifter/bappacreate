@@ -3,15 +3,13 @@ package coresystems
 import (
 	"math"
 
+	"github.com/TheBitDrifter/bappa/blueprint"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/components"
-	"github.com/TheBitDrifter/blueprint"
 
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/tteokbokki/motion"
-	"github.com/TheBitDrifter/tteokbokki/spatial"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 // PlayerPlatformCollisionSystem handles collisions between players and one-way platforms.
@@ -59,7 +57,7 @@ func (s *PlayerPlatformCollisionSystem) Run(scene blueprint.Scene, dt float64) e
 			}
 
 			// Track the full position (X and Y) for this specific player
-			playerPos := blueprintspatial.Components.Position.GetFromCursor(playerCursor)
+			playerPos := spatial.Components.Position.GetFromCursor(playerCursor)
 			s.trackPosition(playerID, playerPos.Two)
 		}
 	}
@@ -68,15 +66,15 @@ func (s *PlayerPlatformCollisionSystem) Run(scene blueprint.Scene, dt float64) e
 
 func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformCursor, playerCursor *warehouse.Cursor, playerID uint64) error {
 	// Get the player state
-	playerShape := blueprintspatial.Components.Shape.GetFromCursor(playerCursor)
-	playerPosition := blueprintspatial.Components.Position.GetFromCursor(playerCursor)
-	playerDynamics := blueprintmotion.Components.Dynamics.GetFromCursor(playerCursor)
+	playerShape := spatial.Components.Shape.GetFromCursor(playerCursor)
+	playerPosition := spatial.Components.Position.GetFromCursor(playerCursor)
+	playerDynamics := motion.Components.Dynamics.GetFromCursor(playerCursor)
 
 	// Get the platform state
-	platformShape := blueprintspatial.Components.Shape.GetFromCursor(platformCursor)
-	platformPosition := blueprintspatial.Components.Position.GetFromCursor(platformCursor)
-	platformRotation := float64(*blueprintspatial.Components.Rotation.GetFromCursor(platformCursor))
-	platformDynamics := blueprintmotion.Components.Dynamics.GetFromCursor(platformCursor)
+	platformShape := spatial.Components.Shape.GetFromCursor(platformCursor)
+	platformPosition := spatial.Components.Position.GetFromCursor(platformCursor)
+	platformRotation := float64(*spatial.Components.Rotation.GetFromCursor(platformCursor))
+	platformDynamics := motion.Components.Dynamics.GetFromCursor(platformCursor)
 
 	// Check for collision
 	if ok, collisionResult := spatial.Detector.Check(

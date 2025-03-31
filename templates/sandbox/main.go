@@ -4,13 +4,13 @@ import (
 	"embed"
 	"log"
 
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_clientsystems"
+	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/sandbox/clientsystems"
 	"github.com/TheBitDrifter/bappacreate/templates/sandbox/coresystems"
 	"github.com/TheBitDrifter/bappacreate/templates/sandbox/rendersystems"
 	"github.com/TheBitDrifter/bappacreate/templates/sandbox/scenes"
-	"github.com/TheBitDrifter/coldbrew"
-	coldbrew_clientsystems "github.com/TheBitDrifter/coldbrew/clientsystems"
-	coldbrew_rendersystems "github.com/TheBitDrifter/coldbrew/rendersystems"
 )
 
 //go:embed assets/*

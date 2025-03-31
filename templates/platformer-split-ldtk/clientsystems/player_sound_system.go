@@ -3,13 +3,13 @@ package clientsystems
 import (
 	"math"
 
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/components"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/sounds"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 type PlayerSoundSystem struct{}
@@ -18,10 +18,10 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 	// Create a query for players that can play sounds and are on the ground
 	playersWithSoundsOnTheGround := warehouse.Factory.NewQuery()
 	playersWithSoundsOnTheGround.And(
-		blueprintclient.Components.SoundBundle, // Has sounds
-		blueprintinput.Components.InputBuffer,  // Can receive input
-		blueprintmotion.Components.Dynamics,    // Has physics properties
-		components.OnGroundComponent,           // Is on the ground
+		client.Components.SoundBundle, // Has sounds
+		input.Components.InputBuffer,  // Can receive input
+		motion.Components.Dynamics,    // Has physics properties
+		components.OnGroundComponent,  // Is on the ground
 	)
 
 	// Get all entities that match the query
@@ -31,8 +31,8 @@ func (sys PlayerSoundSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 	for range cursor.Next() {
 
 		// Get state
-		soundBundle := blueprintclient.Components.SoundBundle.GetFromCursor(cursor)
-		dyn := blueprintmotion.Components.Dynamics.GetFromCursor(cursor)
+		soundBundle := client.Components.SoundBundle.GetFromCursor(cursor)
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
 		onGround := components.OnGroundComponent.GetFromCursor(cursor)
 		currentTick := scene.CurrentTick()
 

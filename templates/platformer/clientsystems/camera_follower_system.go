@@ -3,12 +3,12 @@ package clientsystems
 import (
 	"math"
 
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/blueprint/vector"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/blueprint/vector"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 type CameraFollowerSystem struct{}
@@ -17,17 +17,17 @@ func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) 
 	// Query players who have a camera (camera index component)
 	playersWithCamera := warehouse.Factory.NewQuery()
 	playersWithCamera.And(
-		blueprintspatial.Components.Position,
-		blueprintinput.Components.InputBuffer,
-		blueprintclient.Components.CameraIndex,
+		spatial.Components.Position,
+		input.Components.InputBuffer,
+		client.Components.CameraIndex,
 	)
 	// Iterate
 	playerCursor := scene.NewCursor(playersWithCamera)
 	for range playerCursor.Next() {
 		// Get the players position
-		playerPos := blueprintspatial.Components.Position.GetFromCursor(playerCursor)
+		playerPos := spatial.Components.Position.GetFromCursor(playerCursor)
 		// Get the players camera
-		camIndex := int(*blueprintclient.Components.CameraIndex.GetFromCursor(playerCursor))
+		camIndex := int(*client.Components.CameraIndex.GetFromCursor(playerCursor))
 		cam := cli.Cameras()[camIndex]
 		// Get the cameras local scene position
 		_, cameraScenePosition := cam.Positions()

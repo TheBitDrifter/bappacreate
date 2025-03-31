@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 var ExampleComponent = warehouse.FactoryNewComponent[Example]()

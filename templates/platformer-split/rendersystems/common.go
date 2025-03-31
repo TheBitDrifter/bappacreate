@@ -1,6 +1,6 @@
 package rendersystems
 
-import "github.com/TheBitDrifter/coldbrew"
+import "github.com/TheBitDrifter/bappa/coldbrew"
 
 var DefaultRenderSystems = []coldbrew.RenderSystem{
 	PlayerCameraPriorityRenderer{},

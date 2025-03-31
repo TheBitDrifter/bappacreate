@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 // Here we convert our types into components for the ECS

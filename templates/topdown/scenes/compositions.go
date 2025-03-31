@@ -1,12 +1,12 @@
 package scenes
 
 import (
+	"github.com/TheBitDrifter/bappa/blueprint/client"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
+	"github.com/TheBitDrifter/bappa/warehouse"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown/components"
-	blueprintclient "github.com/TheBitDrifter/blueprint/client"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintmotion "github.com/TheBitDrifter/blueprint/motion"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
-	"github.com/TheBitDrifter/warehouse"
 )
 
 // These are slices of common component compositions for various archetypes.
@@ -16,39 +16,39 @@ import (
 // These slices are especially useful for creating starting entities, via archetypes, inside plan functions
 
 var PlayerComposition = []warehouse.Component{
-	blueprintspatial.Components.Position,
-	blueprintmotion.Components.Dynamics,
-	blueprintclient.Components.SpriteBundle,
-	blueprintinput.Components.InputBuffer,
-	blueprintclient.Components.CameraIndex,
-	blueprintspatial.Components.Shape,
-	blueprintclient.Components.SoundBundle,
-	blueprintspatial.Components.Direction,
+	spatial.Components.Position,
+	motion.Components.Dynamics,
+	client.Components.SpriteBundle,
+	input.Components.InputBuffer,
+	client.Components.CameraIndex,
+	spatial.Components.Shape,
+	client.Components.SoundBundle,
+	spatial.Components.Direction,
 	components.DirectionEightComponent,
 }
 
 var BlockTerrainComposition = []warehouse.Component{
 	components.BlockTerrainTag,
-	blueprintspatial.Components.Shape,
-	blueprintspatial.Components.Position,
-	blueprintmotion.Components.Dynamics,
+	spatial.Components.Shape,
+	spatial.Components.Position,
+	motion.Components.Dynamics,
 }
 
 var PropComposition = []warehouse.Component{
 	components.BlockTerrainTag,
-	blueprintclient.Components.SpriteBundle,
-	blueprintspatial.Components.Shape,
-	blueprintspatial.Components.Position,
-	blueprintmotion.Components.Dynamics,
+	client.Components.SpriteBundle,
+	spatial.Components.Shape,
+	spatial.Components.Position,
+	motion.Components.Dynamics,
 }
 
 var CollisionPlayerTransferComposition = []warehouse.Component{
-	blueprintspatial.Components.Position,
-	blueprintspatial.Components.Shape,
+	spatial.Components.Position,
+	spatial.Components.Shape,
 	components.PlayerSceneTransferComponent,
 }
 
 var MusicComposition = []warehouse.Component{
-	blueprintclient.Components.SoundBundle,
+	client.Components.SoundBundle,
 	components.MusicTag,
 }

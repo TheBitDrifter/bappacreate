@@ -1,9 +1,9 @@
 package clientsystems
 
 import (
-	"github.com/TheBitDrifter/blueprint"
-	"github.com/TheBitDrifter/coldbrew"
-	"github.com/TheBitDrifter/warehouse"
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/coldbrew"
+	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
 type SceneDeactivationSystem struct{}

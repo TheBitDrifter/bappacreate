@@ -3,11 +3,11 @@ package coresystems
 import (
 	"math"
 
+	"github.com/TheBitDrifter/bappa/blueprint"
+	"github.com/TheBitDrifter/bappa/blueprint/input"
+	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/actions"
 	"github.com/TheBitDrifter/bappacreate/templates/topdown-split/components"
-	"github.com/TheBitDrifter/blueprint"
-	blueprintinput "github.com/TheBitDrifter/blueprint/input"
-	blueprintspatial "github.com/TheBitDrifter/blueprint/spatial"
 )
 
 type PlayerMovementSystem struct{}
@@ -16,9 +16,9 @@ func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
 	// Get all entities with input buffers (players)
 	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
 	for range cursor.Next() {
-		incomingInputs := blueprintinput.Components.InputBuffer.GetFromCursor(cursor)
-		pos := blueprintspatial.Components.Position.GetFromCursor(cursor)
-		direction := blueprintspatial.Components.Direction.GetFromCursor(cursor)
+		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
+		pos := spatial.Components.Position.GetFromCursor(cursor)
+		direction := spatial.Components.Direction.GetFromCursor(cursor)
 		direction8 := components.DirectionEightComponent.GetFromCursor(cursor)
 
 		// Process horizontal movement
