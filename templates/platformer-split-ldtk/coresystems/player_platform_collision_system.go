@@ -115,7 +115,6 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 				},
 				// Pass the AAB dimensions to calc the players bottom points along with their historical positions
 				playerShape.LocalAAB.Width, playerShape.LocalAAB.Height,
-				platformRotation,
 			)
 		}
 
@@ -226,85 +225,48 @@ func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAbove(playerID 
 func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAboveAdvanced(
 	playerID uint64,
 	platformTopVerts []vector.Two,
-	playerWidth, playerHeight, rotation float64,
+	playerWidth, playerHeight float64,
 ) bool {
 	positions, exists := s.playerPositionHistory[playerID]
 	if !exists || len(positions) == 0 {
 		return false
 	}
-
-	// Get the vertices of the platform top edge
 	v1 := platformTopVerts[0]
 	v2 := platformTopVerts[1]
 
-	// Calculate the edge vector and its length
 	edgeVector := v2.Sub(v1)
 	edgeLength := edgeVector.Mag()
 	if edgeLength < 0.001 {
-		return false // Avoid division by zero
+		return false
 	}
 
-	// Normalize the edge vector
 	edgeNormalized := edgeVector.Norm()
-
-	// Calculate the normal vector perpendicular to the edge
-	// Make sure it points upward (negative Y in this coordinate system)
 	edgeNormal := vector.Two{X: -edgeNormalized.Y, Y: edgeNormalized.X}
 
-	// Ensure the normal points upward (negative Y)
-	if edgeNormal.Y > 0 {
+	worldUp := vector.Two{X: 0, Y: -1}
+	if edgeNormal.ScalarProduct(worldUp) < 0 {
 		edgeNormal = edgeNormal.Scale(-1)
 	}
-
-	// For each historical position
 	for _, historicalPos := range positions {
-		// Calculate player points to check (bottom center, bottom left, and bottom right)
+		halfHeight := playerHeight / 2
+		halfWidth := playerWidth / 2
 		checkPoints := []vector.Two{
-			// Bottom center
-			{
-				X: historicalPos.X,
-				Y: historicalPos.Y + playerHeight/2,
-			},
+			{X: historicalPos.X, Y: historicalPos.Y + halfHeight},
+			{X: historicalPos.X - halfWidth, Y: historicalPos.Y + halfHeight},
+			{X: historicalPos.X + halfWidth, Y: historicalPos.Y + halfHeight},
 		}
 
-		// Add appropriate side points based on rotation direction
-		// For negative rotation, the platform slopes down to the right,
-		// so we need to check the right side more carefully
-		if rotation < 0 {
-			checkPoints = append(checkPoints, vector.Two{
-				X: historicalPos.X + playerWidth/2 - 5, // Right side with small inset
-				Y: historicalPos.Y + playerHeight/2,
-			})
-		}
-
-		// For positive rotation, the platform slopes down to the left,
-		// so we need to check the left side more carefully
-		if rotation > 0 {
-			checkPoints = append(checkPoints, vector.Two{
-				X: historicalPos.X - playerWidth/2 + 5, // Left side with small inset
-				Y: historicalPos.Y + playerHeight/2,
-			})
-		}
-
-		// Check each point of the player's bottom
 		for _, point := range checkPoints {
-			// Vector from edge start to point
 			v1ToPoint := point.Sub(v1)
-
-			// Distance along the normal (positive means above the edge)
 			distanceAlongNormal := v1ToPoint.ScalarProduct(edgeNormal)
-
-			// Project onto the edge to check if within bounds
 			projectionOnEdge := v1ToPoint.ScalarProduct(edgeNormalized)
 
-			// Constants for checks
-			const margin = 10.0   // Margin for edge projection
-			const minAbove = 1.0  // Minimum distance to be considered "above"
-			const maxAbove = 50.0 // Maximum distance to be considered relevant
+			const margin = 10.0
+			const minAbove = 1.0
+			const maxAbove = 75.0
 
-			// A positive distance along normal means the point is in the direction of the normal
-			// The normal points upward, so positive distance means "above" the edge
-			isAbove := distanceAlongNormal > minAbove &&
+			// Check if the point is geometrically "above" the finite edge segment
+			isAbove := distanceAlongNormal >= minAbove &&
 				distanceAlongNormal < maxAbove &&
 				projectionOnEdge >= -margin &&
 				projectionOnEdge <= edgeLength+margin
