@@ -18,8 +18,9 @@ import (
 //
 // It is one of the more 'dense' bits of the template/example.
 type PlayerPlatformCollisionSystem struct {
-	playerLastPositions []vector.Two // Track full positions (X and Y)
-	maxPositionsToTrack int          // Number of positions to track
+	// Map of player entity ID to their position history
+	playerPositionHistory map[uint64][]vector.Two
+	maxPositionsToTrack   int // Number of positions to track
 }
 
 // NewPlayerPlatformCollisionSystem creates a new collision system with initialized position tracking.
@@ -27,8 +28,8 @@ type PlayerPlatformCollisionSystem struct {
 func NewPlayerPlatformCollisionSystem() *PlayerPlatformCollisionSystem {
 	trackCount := 15 // higher count == more tunneling protection == higher cost
 	return &PlayerPlatformCollisionSystem{
-		playerLastPositions: make([]vector.Two, 0, trackCount),
-		maxPositionsToTrack: trackCount,
+		playerPositionHistory: make(map[uint64][]vector.Two),
+		maxPositionsToTrack:   trackCount,
 	}
 }
 
@@ -42,20 +43,28 @@ func (s *PlayerPlatformCollisionSystem) Run(scene blueprint.Scene, dt float64) e
 	for range platformCursor.Next() {
 		// Inner is players
 		for range playerCursor.Next() {
-			// Delegate to helper
-			err := s.resolve(scene, platformCursor, playerCursor)
+			// Get player entity ID to track positions independently for each player
+			playerEntity, err := playerCursor.CurrentEntity()
 			if err != nil {
 				return err
 			}
-			// Track the full position (X and Y)
+			playerID := uint64(playerEntity.ID())
+
+			// Delegate to helper
+			err = s.resolve(scene, platformCursor, playerCursor, playerID)
+			if err != nil {
+				return err
+			}
+
+			// Track the full position (X and Y) for this specific player
 			playerPos := spatial.Components.Position.GetFromCursor(playerCursor)
-			s.trackPosition(playerPos.Two)
+			s.trackPosition(playerID, playerPos.Two)
 		}
 	}
 	return nil
 }
 
-func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformCursor, playerCursor *warehouse.Cursor) error {
+func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformCursor, playerCursor *warehouse.Cursor, playerID uint64) error {
 	// Get the player state
 	playerShape := spatial.Components.Shape.GetFromCursor(playerCursor)
 	playerPosition := spatial.Components.Position.GetFromCursor(playerCursor)
@@ -93,11 +102,12 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 
 		// Checking for 'above' is much easier when the edge is flat (fixed y value)
 		if platformRotation == 0 {
-			playerWasAbove = s.checkAnyPlayerPositionWasAbove(platformTop, playerShape.LocalAAB.Height)
+			playerWasAbove = s.checkAnyPlayerPositionWasAbove(playerID, platformTop, playerShape.LocalAAB.Height)
 
 			// Rotation check is more complicated using vector math to determine if player 'cleared top'
 		} else {
 			playerWasAbove = s.checkAnyPlayerPositionWasAboveAdvanced(
+				playerID,
 				// The top edge for the triangle platforms is always 0,1
 				[]vector.Two{
 					platformShape.Polygon.WorldVertices[0],
@@ -105,7 +115,6 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 				},
 				// Pass the AAB dimensions to calc the players bottom points along with their historical positions
 				playerShape.LocalAAB.Width, playerShape.LocalAAB.Height,
-				platformRotation,
 			)
 		}
 
@@ -178,25 +187,31 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 	return nil
 }
 
-// trackPosition adds a position to the history and ensures only the last N are kept
-func (s *PlayerPlatformCollisionSystem) trackPosition(pos vector.Two) {
-	// Add the new position
-	s.playerLastPositions = append(s.playerLastPositions, pos)
+// trackPosition adds a position to the history and ensures only the last N are kept for a specific player
+func (s *PlayerPlatformCollisionSystem) trackPosition(playerID uint64, pos vector.Two) {
+	// Initialize the position history for this player if it doesn't exist
+	if _, exists := s.playerPositionHistory[playerID]; !exists {
+		s.playerPositionHistory[playerID] = make([]vector.Two, 0, s.maxPositionsToTrack)
+	}
+
+	// Add the new position to this player's history
+	s.playerPositionHistory[playerID] = append(s.playerPositionHistory[playerID], pos)
 
 	// If we've exceeded our max, remove the oldest position
-	if len(s.playerLastPositions) > s.maxPositionsToTrack {
-		s.playerLastPositions = s.playerLastPositions[1:]
+	if len(s.playerPositionHistory[playerID]) > s.maxPositionsToTrack {
+		s.playerPositionHistory[playerID] = s.playerPositionHistory[playerID][1:]
 	}
 }
 
 // checkAnyPlayerPositionWasAbove checks if the player was above a non-rotated platform in any historical position
-func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAbove(platformTop float64, playerHeight float64) bool {
-	if len(s.playerLastPositions) == 0 {
+func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAbove(playerID uint64, platformTop float64, playerHeight float64) bool {
+	positions, exists := s.playerPositionHistory[playerID]
+	if !exists || len(positions) == 0 {
 		return false
 	}
 
 	// Check all stored positions to see if the player was above in any of them
-	for _, pos := range s.playerLastPositions {
+	for _, pos := range positions {
 		playerBottom := pos.Y + playerHeight/2
 		if playerBottom <= platformTop {
 			return true // Found at least one position where player was above
@@ -207,83 +222,51 @@ func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAbove(platformT
 }
 
 // checkAnyPlayerPositionWasAboveAdvanced checks if the player was above a rotated platform's top edge
-func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAboveAdvanced(platformTopVerts []vector.Two, playerWidth, playerHeight, rotation float64) bool {
-	if len(s.playerLastPositions) == 0 {
+func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAboveAdvanced(
+	playerID uint64,
+	platformTopVerts []vector.Two,
+	playerWidth, playerHeight float64,
+) bool {
+	positions, exists := s.playerPositionHistory[playerID]
+	if !exists || len(positions) == 0 {
 		return false
 	}
-
-	// Get the vertices of the platform top edge
 	v1 := platformTopVerts[0]
 	v2 := platformTopVerts[1]
 
-	// Calculate the edge vector and its length
 	edgeVector := v2.Sub(v1)
 	edgeLength := edgeVector.Mag()
 	if edgeLength < 0.001 {
-		return false // Avoid division by zero
+		return false
 	}
 
-	// Normalize the edge vector
 	edgeNormalized := edgeVector.Norm()
-
-	// Calculate the normal vector perpendicular to the edge
-	// Make sure it points upward (negative Y in this coordinate system)
 	edgeNormal := vector.Two{X: -edgeNormalized.Y, Y: edgeNormalized.X}
 
-	// Ensure the normal points upward (negative Y)
-	if edgeNormal.Y > 0 {
+	worldUp := vector.Two{X: 0, Y: -1}
+	if edgeNormal.ScalarProduct(worldUp) < 0 {
 		edgeNormal = edgeNormal.Scale(-1)
 	}
-
-	// For each historical position
-	for _, historicalPos := range s.playerLastPositions {
-		// Calculate player points to check (bottom center, bottom left, and bottom right)
+	for _, historicalPos := range positions {
+		halfHeight := playerHeight / 2
+		halfWidth := playerWidth / 2
 		checkPoints := []vector.Two{
-			// Bottom center
-			{
-				X: historicalPos.X,
-				Y: historicalPos.Y + playerHeight/2,
-			},
+			{X: historicalPos.X, Y: historicalPos.Y + halfHeight},
+			{X: historicalPos.X - halfWidth, Y: historicalPos.Y + halfHeight},
+			{X: historicalPos.X + halfWidth, Y: historicalPos.Y + halfHeight},
 		}
 
-		// Add appropriate side points based on rotation direction
-		// For negative rotation, the platform slopes down to the right,
-		// so we need to check the right side more carefully
-		if rotation < 0 {
-			checkPoints = append(checkPoints, vector.Two{
-				X: historicalPos.X + playerWidth/2 - 5, // Right side with small inset
-				Y: historicalPos.Y + playerHeight/2,
-			})
-		}
-
-		// For positive rotation, the platform slopes down to the left,
-		// so we need to check the left side more carefully
-		if rotation > 0 {
-			checkPoints = append(checkPoints, vector.Two{
-				X: historicalPos.X - playerWidth/2 + 5, // Left side with small inset
-				Y: historicalPos.Y + playerHeight/2,
-			})
-		}
-
-		// Check each point of the player's bottom
 		for _, point := range checkPoints {
-			// Vector from edge start to point
 			v1ToPoint := point.Sub(v1)
-
-			// Distance along the normal (positive means above the edge)
 			distanceAlongNormal := v1ToPoint.ScalarProduct(edgeNormal)
-
-			// Project onto the edge to check if within bounds
 			projectionOnEdge := v1ToPoint.ScalarProduct(edgeNormalized)
 
-			// Constants for checks
-			const margin = 10.0   // Margin for edge projection
-			const minAbove = 1.0  // Minimum distance to be considered "above"
-			const maxAbove = 50.0 // Maximum distance to be considered relevant
+			const margin = 10.0
+			const minAbove = 1.0
+			const maxAbove = 75.0
 
-			// A positive distance along normal means the point is in the direction of the normal
-			// The normal points upward, so positive distance means "above" the edge
-			isAbove := distanceAlongNormal > minAbove &&
+			// Check if the point is geometrically "above" the finite edge segment
+			isAbove := distanceAlongNormal >= minAbove &&
 				distanceAlongNormal < maxAbove &&
 				projectionOnEdge >= -margin &&
 				projectionOnEdge <= edgeLength+margin
