@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -22,6 +23,266 @@ var binaryExtensions = map[string]bool{
 	".wav":  true,
 	".mp3":  true,
 	".ogg":  true,
+}
+
+// Structure to define common files and where they should be copied to in each template
+type CommonFileMapping struct {
+	SourcePath      string
+	DestinationPath map[string]string // Map of template name → destination path within project
+}
+
+// Define the import paths for each template
+var templateImportPaths = map[string]string{
+	"platformer":            "github.com/TheBitDrifter/bappacreate/templates/platformer",
+	"platformer-split":      "github.com/TheBitDrifter/bappacreate/templates/platformer-split",
+	"platformer-ldtk":       "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk",
+	"platformer-split-ldtk": "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk",
+}
+
+// Common import path that will be replaced in all files
+var commonImportPattern = "github.com/TheBitDrifter/bappacreate/templates/common"
+
+// Define all the shared files that should be moved from common to each template
+var commonFiles = []CommonFileMapping{
+	// Core Systems
+	{
+		SourcePath: "templates/common/coresystems/gravitysystem.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/gravitysystem.go",
+			"platformer-split":      "coresystems/gravitysystem.go",
+			"platformer-ldtk":       "coresystems/gravitysystem.go",
+			"platformer-split-ldtk": "coresystems/gravitysystem.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/frictionsystem.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/frictionsystem.go",
+			"platformer-split":      "coresystems/frictionsystem.go",
+			"platformer-ldtk":       "coresystems/frictionsystem.go",
+			"platformer-split-ldtk": "coresystems/frictionsystem.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/player_movement_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/player_movement_system.go",
+			"platformer-split":      "coresystems/player_movement_system.go",
+			"platformer-ldtk":       "coresystems/player_movement_system.go",
+			"platformer-split-ldtk": "coresystems/player_movement_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/player_block_collision_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/player_block_collision_system.go",
+			"platformer-split":      "coresystems/player_block_collision_system.go",
+			"platformer-ldtk":       "coresystems/player_block_collision_system.go",
+			"platformer-split-ldtk": "coresystems/player_block_collision_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/player_platform_collision_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/player_platform_collision_system.go",
+			"platformer-split":      "coresystems/player_platform_collision_system.go",
+			"platformer-ldtk":       "coresystems/player_platform_collision_system.go",
+			"platformer-split-ldtk": "coresystems/player_platform_collision_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/on_ground_clearing_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/on_ground_clearing_system.go",
+			"platformer-split":      "coresystems/on_ground_clearing_system.go",
+			"platformer-ldtk":       "coresystems/on_ground_clearing_system.go",
+			"platformer-split-ldtk": "coresystems/on_ground_clearing_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/ignore_platform_clearing_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/ignore_platform_clearing_system.go",
+			"platformer-split":      "coresystems/ignore_platform_clearing_system.go",
+			"platformer-ldtk":       "coresystems/ignore_platform_clearing_system.go",
+			"platformer-split-ldtk": "coresystems/ignore_platform_clearing_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/coresystems/common.go",
+		DestinationPath: map[string]string{
+			"platformer":            "coresystems/common.go",
+			"platformer-split":      "coresystems/common.go",
+			"platformer-ldtk":       "coresystems/common.go",
+			"platformer-split-ldtk": "coresystems/common.go",
+		},
+	},
+	// Client Systems
+	{
+		SourcePath: "templates/common/clientsystems/camera_follower_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/camera_follower_system.go",
+			"platformer-split":      "clientsystems/camera_follower_system.go",
+			"platformer-ldtk":       "clientsystems/camera_follower_system.go",
+			"platformer-split-ldtk": "clientsystems/camera_follower_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/player_animation_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/player_animation_system.go",
+			"platformer-split":      "clientsystems/player_animation_system.go",
+			"platformer-ldtk":       "clientsystems/player_animation_system.go",
+			"platformer-split-ldtk": "clientsystems/player_animation_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/player_sound_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/player_sound_system.go",
+			"platformer-split":      "clientsystems/player_sound_system.go",
+			"platformer-ldtk":       "clientsystems/player_sound_system.go",
+			"platformer-split-ldtk": "clientsystems/player_sound_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/musicsystem.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/musicsystem.go",
+			"platformer-split":      "clientsystems/musicsystem.go",
+			"platformer-ldtk":       "clientsystems/musicsystem.go",
+			"platformer-split-ldtk": "clientsystems/musicsystem.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/collision_player_transfer_system.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/collision_player_transfer_system.go",
+			"platformer-split":      "clientsystems/collision_player_transfer_system.go",
+			"platformer-ldtk":       "clientsystems/collision_player_transfer_system.go",
+			"platformer-split-ldtk": "clientsystems/collision_player_transfer_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/scene_deactivation_system.go",
+		DestinationPath: map[string]string{
+			"platformer-split":      "clientsystems/scene_deactivation_system.go",
+			"platformer-split-ldtk": "clientsystems/scene_deactivation_system.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/clientsystems/common.go",
+		DestinationPath: map[string]string{
+			"platformer":            "clientsystems/common.go",
+			"platformer-split":      "clientsystems/common.go",
+			"platformer-ldtk":       "clientsystems/common.go",
+			"platformer-split-ldtk": "clientsystems/common.go",
+		},
+	},
+	// Components
+	{
+		SourcePath: "templates/common/components/components.go",
+		DestinationPath: map[string]string{
+			"platformer":            "components/components.go",
+			"platformer-split":      "components/components.go",
+			"platformer-ldtk":       "components/components.go",
+			"platformer-split-ldtk": "components/components.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/components/tags.go",
+		DestinationPath: map[string]string{
+			"platformer":            "components/tags.go",
+			"platformer-split":      "components/tags.go",
+			"platformer-ldtk":       "components/tags.go",
+			"platformer-split-ldtk": "components/tags.go",
+		},
+	},
+	// Other shared code
+	{
+		SourcePath: "templates/common/animations/animations.go",
+		DestinationPath: map[string]string{
+			"platformer":            "animations/animations.go",
+			"platformer-split":      "animations/animations.go",
+			"platformer-ldtk":       "animations/animations.go",
+			"platformer-split-ldtk": "animations/animations.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/sounds/sounds.go",
+		DestinationPath: map[string]string{
+			"platformer":            "sounds/sounds.go",
+			"platformer-split":      "sounds/sounds.go",
+			"platformer-ldtk":       "sounds/sounds.go",
+			"platformer-split-ldtk": "sounds/sounds.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/actions/actions.go",
+		DestinationPath: map[string]string{
+			"platformer":            "actions/actions.go",
+			"platformer-split":      "actions/actions.go",
+			"platformer-ldtk":       "actions/actions.go",
+			"platformer-split-ldtk": "actions/actions.go",
+		},
+	},
+	// Render Systems
+	{
+		SourcePath: "templates/common/rendersystems/common.go",
+		DestinationPath: map[string]string{
+			"platformer":            "rendersystems/common.go",
+			"platformer-split":      "rendersystems/common.go",
+			"platformer-ldtk":       "rendersystems/common.go",
+			"platformer-split-ldtk": "rendersystems/common.go",
+		},
+	},
+	{
+		SourcePath: "templates/common/rendersystems/player_camera_prio_system.go",
+		DestinationPath: map[string]string{
+			"platformer-split":      "rendersystems/player_camera_prio_system.go",
+			"platformer-split-ldtk": "rendersystems/player_camera_prio_system.go",
+		},
+	},
+}
+
+// Import path mappings - defines how to transform component imports for each template
+var importPathMappings = map[string]map[string]string{
+	"platformer": {
+		"github.com/TheBitDrifter/bappacreate/templates/common/components":    "github.com/TheBitDrifter/bappacreate/templates/platformer/components",
+		"github.com/TheBitDrifter/bappacreate/templates/common/actions":       "github.com/TheBitDrifter/bappacreate/templates/platformer/actions",
+		"github.com/TheBitDrifter/bappacreate/templates/common/animations":    "github.com/TheBitDrifter/bappacreate/templates/platformer/animations",
+		"github.com/TheBitDrifter/bappacreate/templates/common/sounds":        "github.com/TheBitDrifter/bappacreate/templates/platformer/sounds",
+		"github.com/TheBitDrifter/bappacreate/templates/common/coresystems":   "github.com/TheBitDrifter/bappacreate/templates/platformer/coresystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/clientsystems": "github.com/TheBitDrifter/bappacreate/templates/platformer/clientsystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/rendersystems": "github.com/TheBitDrifter/bappacreate/templates/platformer/rendersystems",
+	},
+	"platformer-split": {
+		"github.com/TheBitDrifter/bappacreate/templates/common/components":    "github.com/TheBitDrifter/bappacreate/templates/platformer-split/components",
+		"github.com/TheBitDrifter/bappacreate/templates/common/actions":       "github.com/TheBitDrifter/bappacreate/templates/platformer-split/actions",
+		"github.com/TheBitDrifter/bappacreate/templates/common/animations":    "github.com/TheBitDrifter/bappacreate/templates/platformer-split/animations",
+		"github.com/TheBitDrifter/bappacreate/templates/common/sounds":        "github.com/TheBitDrifter/bappacreate/templates/platformer-split/sounds",
+		"github.com/TheBitDrifter/bappacreate/templates/common/coresystems":   "github.com/TheBitDrifter/bappacreate/templates/platformer-split/coresystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/clientsystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-split/clientsystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/rendersystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-split/rendersystems",
+	},
+	"platformer-ldtk": {
+		"github.com/TheBitDrifter/bappacreate/templates/common/components":    "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/components",
+		"github.com/TheBitDrifter/bappacreate/templates/common/actions":       "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/actions",
+		"github.com/TheBitDrifter/bappacreate/templates/common/animations":    "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/animations",
+		"github.com/TheBitDrifter/bappacreate/templates/common/sounds":        "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/sounds",
+		"github.com/TheBitDrifter/bappacreate/templates/common/coresystems":   "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/coresystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/clientsystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/clientsystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/rendersystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-ldtk/rendersystems",
+	},
+	"platformer-split-ldtk": {
+		"github.com/TheBitDrifter/bappacreate/templates/common/components":    "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/components",
+		"github.com/TheBitDrifter/bappacreate/templates/common/actions":       "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/actions",
+		"github.com/TheBitDrifter/bappacreate/templates/common/animations":    "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/animations",
+		"github.com/TheBitDrifter/bappacreate/templates/common/sounds":        "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/sounds",
+		"github.com/TheBitDrifter/bappacreate/templates/common/coresystems":   "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/coresystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/clientsystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/clientsystems",
+		"github.com/TheBitDrifter/bappacreate/templates/common/rendersystems": "github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/rendersystems",
+	},
 }
 
 func main() {
@@ -129,6 +390,21 @@ func createProject(projectName, templateName string) {
 			return os.MkdirAll(targetPath, 0755)
 		}
 
+		// Check if this file should be skipped because it will be created from common template
+		skipFile := false
+		for _, mapping := range commonFiles {
+			destPath, exists := mapping.DestinationPath[templateName]
+			if exists && relPath == destPath {
+				skipFile = true
+				break
+			}
+		}
+
+		if skipFile {
+			fmt.Printf("Skipping: %s (will be created from common template)\n", targetPath)
+			return nil
+		}
+
 		// Handle the file appropriately
 		ext := strings.ToLower(filepath.Ext(path))
 
@@ -137,11 +413,19 @@ func createProject(projectName, templateName string) {
 			return copyBinaryFile(path, targetPath)
 		} else {
 			// Process text files with replacement
-			return processTextFile(path, targetPath, username, moduleName, templateImportPath)
+			return processTextFile(path, targetPath, username, moduleName, templateImportPath, templateName)
 		}
 	})
 	if err != nil {
 		fmt.Printf("Error creating project: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Copy common files that should replace template-specific ones
+	fmt.Println("\nProcessing common template files...")
+	err = copyCommonFiles(projectNameOnly, templateName, username, moduleName)
+	if err != nil {
+		fmt.Printf("Error processing common files: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -156,6 +440,82 @@ func createProject(projectName, templateName string) {
 	fmt.Printf("  cd %s\n", projectNameOnly)
 	fmt.Printf("  go mod tidy\n")
 	fmt.Printf("  go run .\n")
+}
+
+// Copy common template files to the project with appropriate processing
+func copyCommonFiles(projectDir, templateName, username, moduleName string) error {
+	// Full project import path
+	projectImportPath := fmt.Sprintf("github.com/%s/%s", username, moduleName)
+
+	for _, mapping := range commonFiles {
+		// Check if this template needs this file
+		destPath, exists := mapping.DestinationPath[templateName]
+		if !exists {
+			continue // Skip files not needed for this template
+		}
+
+		// Full path in the project
+		fullDestPath := filepath.Join(projectDir, destPath)
+
+		// Ensure the directory exists
+		if err := os.MkdirAll(filepath.Dir(fullDestPath), 0755); err != nil {
+			return fmt.Errorf("failed to create directory %s: %v", filepath.Dir(fullDestPath), err)
+		}
+
+		// Read the source file from the common template
+		content, err := templateFS.ReadFile(mapping.SourcePath)
+		if err != nil {
+			// Check if file exists in template-specific location instead
+			templateSpecificPath := strings.Replace(mapping.SourcePath, "templates/common", "templates/"+templateName, 1)
+			fmt.Printf("Common file not found, trying template-specific file: %s\n", templateSpecificPath)
+			content, err = templateFS.ReadFile(templateSpecificPath)
+			if err != nil {
+				return fmt.Errorf("failed to read file %s: %v", mapping.SourcePath, err)
+			}
+		}
+
+		// Process the content
+		processedContent := processCommonFile(string(content), mapping.SourcePath, destPath, templateName, projectImportPath)
+
+		// Write the processed content
+		if err := os.WriteFile(fullDestPath, []byte(processedContent), 0644); err != nil {
+			return fmt.Errorf("failed to write file %s: %v", fullDestPath, err)
+		}
+
+		fmt.Printf("  Created: %s\n", fullDestPath)
+	}
+
+	return nil
+}
+
+// Process a common file's content to make it template-specific
+func processCommonFile(content, sourcePath, destPath, templateName, projectImportPath string) string {
+	// 1. Determine target package name from destination
+	destDir := filepath.Dir(destPath)
+	packageName := filepath.Base(destDir) // E.g., "coresystems" from "coresystems/gravitysystem.go"
+
+	// 2. Replace package declaration
+	packagePattern := regexp.MustCompile(`(?m)^package\s+\w+`)
+	content = packagePattern.ReplaceAllString(content, "package "+packageName)
+
+	// 3. Replace imports for this specific template
+	templateImportPath := templateImportPaths[templateName]
+
+	// First replace any imports from common to template-specific paths
+	templateSpecificMappings, hasMappings := importPathMappings[templateName]
+	if hasMappings {
+		for commonPath, tempPath := range templateSpecificMappings {
+			content = strings.ReplaceAll(content, commonPath, tempPath)
+		}
+	}
+
+	// Common path replacement fallback
+	content = strings.ReplaceAll(content, commonImportPattern, templateImportPath)
+
+	// 4. Replace template imports with final project imports
+	content = strings.ReplaceAll(content, templateImportPath, projectImportPath)
+
+	return content
 }
 
 func copyBinaryFile(sourcePath, targetPath string) error {
@@ -176,11 +536,11 @@ func copyBinaryFile(sourcePath, targetPath string) error {
 	return os.WriteFile(targetPath, data, 0644)
 }
 
-func processTextFile(sourcePath, targetPath, username, moduleName, templateImportPath string) error {
+func processTextFile(sourcePath, targetPath, username, moduleName, templateImportPath, templateName string) error {
 	fmt.Println("Creating:", targetPath)
 
 	// Calculate the new import path including username
-	newImportPath := fmt.Sprintf("github.com/%s/%s", username, moduleName)
+	projectImportPath := fmt.Sprintf("github.com/%s/%s", username, moduleName)
 
 	// Read file content
 	content, err := templateFS.ReadFile(sourcePath)
@@ -190,15 +550,26 @@ func processTextFile(sourcePath, targetPath, username, moduleName, templateImpor
 
 	fileContent := string(content)
 
-	// Replace the full template import path with the new module path including username
-	fileContent = strings.ReplaceAll(fileContent, templateImportPath, newImportPath)
+	// First, handle any imports from common to template-specific paths
+	templateSpecificMappings, hasMappings := importPathMappings[templateName]
+	if hasMappings {
+		for commonPath, tempPath := range templateSpecificMappings {
+			fileContent = strings.ReplaceAll(fileContent, commonPath, tempPath)
+		}
+	}
+
+	// Common import path replacement
+	fileContent = strings.ReplaceAll(fileContent, commonImportPattern, templateImportPath)
+
+	// Then replace all template imports with project imports
+	fileContent = strings.ReplaceAll(fileContent, templateImportPath, projectImportPath)
 
 	// Special handling for go.mod file
 	if filepath.Base(targetPath) == "go.mod" {
 		lines := strings.Split(fileContent, "\n")
 		for i, line := range lines {
 			if strings.HasPrefix(line, "module ") {
-				lines[i] = "module " + newImportPath
+				lines[i] = "module " + projectImportPath
 				break
 			}
 		}

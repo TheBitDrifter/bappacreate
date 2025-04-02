@@ -8,9 +8,9 @@ import (
 	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
 	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
 	"github.com/TheBitDrifter/bappa/warehouse"
-	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/animations"
-	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/components"
-	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/sounds"
+	"github.com/TheBitDrifter/bappacreate/templates/common/animations"
+	"github.com/TheBitDrifter/bappacreate/templates/common/components"
+	"github.com/TheBitDrifter/bappacreate/templates/common/sounds"
 )
 
 // NewPlayer creates a player entity for the scene

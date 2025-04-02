@@ -6,7 +6,7 @@ import (
 	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
 	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
 	"github.com/TheBitDrifter/bappa/warehouse"
-	"github.com/TheBitDrifter/bappacreate/templates/platformer-split/components"
+	"github.com/TheBitDrifter/bappacreate/templates/common/components"
 )
 
 // These are slices of common component compositions for various archetypes.
