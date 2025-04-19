@@ -13,12 +13,11 @@ import (
 	"github.com/TheBitDrifter/bappacreate/templates/common/sounds"
 )
 
-// NewPlayer creates a player entity for the scene
-func NewPlayers(sto warehouse.Storage, count int) error {
+// NewPlayers creates player entities for the scene
+func NewPlayers(x, y float64, sto warehouse.Storage, count int) error {
 	playerArchetype, err := sto.NewOrExistingArchetype(
 		PlayerComposition...,
 	)
-
 	for i := 0; i < count; i++ {
 		// We only have two, so alternate
 		sheetPath := "characters/box_man_sheet_main.png"
@@ -26,11 +25,11 @@ func NewPlayers(sto warehouse.Storage, count int) error {
 			sheetPath = "characters/box_man_sheet_alt.png"
 		}
 		err = playerArchetype.Generate(1,
-			spatial.NewPosition(float64(100*i), 180),
+			spatial.NewPosition(x*float64(i), y),
 			spatial.NewRectangle(18, 58),
 			motion.NewDynamics(10),
 			spatial.NewDirectionRight(),
-			input.InputBuffer{ReceiverIndex: i},
+			input.ActionBuffer{ReceiverIndex: i},
 			client.CameraIndex(i),
 			client.NewSpriteBundle().
 				AddSprite(sheetPath, true).
@@ -95,7 +94,7 @@ func NewFloor(sto warehouse.Storage, y float64) error {
 		spatial.NewPosition(1500, y),
 		spatial.NewRectangle(4000, 50),
 		client.NewSpriteBundle().
-			AddSprite("terrain/floor.png", true).
+			AddSprite("images/terrain/floor.png", true).
 			WithOffset(vector.Two{X: -1500, Y: -25}),
 	)
 }

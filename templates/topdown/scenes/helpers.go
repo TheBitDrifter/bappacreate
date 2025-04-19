@@ -13,23 +13,23 @@ import (
 )
 
 // NewPlayer creates a player entity
-func NewPlayer(sto warehouse.Storage) error {
+func NewPlayer(x, y float64, sto warehouse.Storage) error {
 	playerArchetype, err := sto.NewOrExistingArchetype(
 		PlayerComposition...,
 	)
 	err = playerArchetype.Generate(1,
-		spatial.NewPosition(180, 180),
+		spatial.NewPosition(x, y),
 		spatial.NewRectangle(16, 16),
 		motion.NewDynamics(10),
 		spatial.NewDirectionRight(),
-		input.InputBuffer{ReceiverIndex: 0},
+		input.ActionBuffer{ReceiverIndex: 0},
 		client.CameraIndex(0),
 		client.NewSpriteBundle().
-			AddSprite("characters/main/idle.png", true).
+			AddSprite("images/characters/main/idle.png", true).
 			WithAnimations(animations.Down, animations.Side, animations.DownSide, animations.UpSide, animations.Up).
 			SetActiveAnimation(animations.Down).
 			WithOffset(vector.Two{X: -24, Y: -32}).
-			AddSprite("characters/main/walk.png", false).
+			AddSprite("images/characters/main/walk.png", false).
 			WithAnimations(animations.Down, animations.Side, animations.DownSide, animations.UpSide, animations.Up).
 			SetActiveAnimation(animations.Down).
 			WithOffset(vector.Two{X: -24, Y: -32}),
@@ -57,7 +57,7 @@ func NewTreeProp(sto warehouse.Storage, x, y float64) error {
 		spatial.NewRectangle(10, 10),
 		motion.NewDynamics(0),
 		client.NewSpriteBundle().
-			AddSprite("props/tree.png", true).
+			AddSprite("images/props/tree.png", true).
 			WithOffset(vector.Two{X: -45, Y: -130}),
 	)
 }
@@ -75,7 +75,7 @@ func NewMoveableStatueProp(sto warehouse.Storage, x, y float64) error {
 		spatial.NewRectangle(28, 20),
 		motion.NewDynamics(10),
 		client.NewSpriteBundle().
-			AddSprite("props/statue.png", true).
+			AddSprite("images/props/statue.png", true).
 			WithOffset(vector.Two{X: -17, Y: -60}),
 	)
 }

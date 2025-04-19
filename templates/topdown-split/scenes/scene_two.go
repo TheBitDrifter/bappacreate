@@ -15,7 +15,7 @@ var SceneTwo = Scene{
 	Height: 500,
 }
 
-func sceneTwoPlan(height, width int, sto warehouse.Storage) error {
+func sceneTwoPlan(width, height int, sto warehouse.Storage) error {
 	// Left bounds
 	err := NewBlockTerrain(sto, 140, 200, 10, 400)
 	if err != nil {
@@ -59,7 +59,7 @@ func sceneTwoPlan(height, width int, sto warehouse.Storage) error {
 	}
 
 	// Background
-	err = blueprint.CreateStillBackground(sto, "backgrounds/scene_two.png", vector.Two{X: 140, Y: 0})
+	err = blueprint.CreateStillBackground(sto, "images/backgrounds/scene_two.png", vector.Two{X: 140, Y: 0})
 	if err != nil {
 		return err
 	}

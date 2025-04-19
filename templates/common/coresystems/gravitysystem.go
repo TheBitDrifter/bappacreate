@@ -13,19 +13,11 @@ const (
 type GravitySystem struct{}
 
 func (GravitySystem) Run(scene blueprint.Scene, dt float64) error {
-	// Iterate through entities with dynamics components(physics)
 	cursor := scene.NewCursor(blueprint.Queries.Dynamics)
 	for range cursor.Next() {
-		// Get the dynamics
 		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
-
-		// Get the mass
 		mass := 1 / dyn.InverseMass
-
-		// Use the motion package to calc the gravity force
 		gravity := motion.Forces.Generator.NewGravityForce(mass, DEFAULT_GRAVITY, PIXELS_PER_METER)
-
-		// Apply the force
 		motion.Forces.AddForce(dyn, gravity)
 	}
 	return nil

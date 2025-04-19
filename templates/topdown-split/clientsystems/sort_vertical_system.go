@@ -12,19 +12,15 @@ type SortVerticalSystem struct{}
 // This system assigns priority to sprites via their vertical position (y)
 // This allows the GlobalRenderSystem to draw them in proper order
 func (SortVerticalSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) error {
-	// Query all non background spriteBundles
 	query := warehouse.Factory.NewQuery().And(
 		client.Components.SpriteBundle,
 		spatial.Components.Position,
 		warehouse.Factory.NewQuery().Not(client.Components.ParallaxBackground),
 	)
 
-	// Make a cursor from the query
 	cursor := scene.NewCursor(query)
 
-	// Iterate
 	for range cursor.Next() {
-		// Get the position and sprite bundle
 		pos := spatial.Components.Position.GetFromCursor(cursor)
 		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
 

@@ -15,7 +15,7 @@ var SceneOne = Scene{
 }
 
 // Scene one is a city scape
-func sceneOnePlan(height, width int, sto warehouse.Storage) error {
+func sceneOnePlan(width, height int, sto warehouse.Storage) error {
 	// Load the image tiles
 	err := ldtk.DATA.LoadTiles(SCENE_ONE_NAME, sto)
 	if err != nil {

@@ -13,16 +13,16 @@ import (
 )
 
 // NewPlayer creates a player entity
-func NewPlayers(sto warehouse.Storage, count int) error {
+func NewPlayer(x, y float64, sto warehouse.Storage, count int) error {
 	playerArchetype, err := sto.NewOrExistingArchetype(
 		PlayerComposition...,
 	)
 
 	for i := 0; i < count; i++ {
 		// We only have two sets, so we alternate based on even/odd
-		spriteSheetParentPath := "characters/main/"
+		spriteSheetParentPath := "images/characters/main/"
 		if i%2 != 0 {
-			spriteSheetParentPath = "characters/alt/"
+			spriteSheetParentPath = "images/characters/alt/"
 		}
 
 		err = playerArchetype.Generate(1,
@@ -30,7 +30,7 @@ func NewPlayers(sto warehouse.Storage, count int) error {
 			spatial.NewRectangle(16, 16),
 			motion.NewDynamics(10),
 			spatial.NewDirectionRight(),
-			input.InputBuffer{ReceiverIndex: i},
+			input.ActionBuffer{ReceiverIndex: i},
 			client.CameraIndex(i),
 			client.NewSpriteBundle().
 				AddSprite(spriteSheetParentPath+"idle.png", true).
@@ -65,7 +65,7 @@ func NewTreeProp(sto warehouse.Storage, x, y float64) error {
 		spatial.NewRectangle(10, 10),
 		motion.NewDynamics(0),
 		client.NewSpriteBundle().
-			AddSprite("props/tree.png", true).
+			AddSprite("images/props/tree.png", true).
 			WithOffset(vector.Two{X: -45, Y: -130}),
 	)
 }
@@ -83,7 +83,7 @@ func NewMoveableStatueProp(sto warehouse.Storage, x, y float64) error {
 		spatial.NewRectangle(28, 20),
 		motion.NewDynamics(10),
 		client.NewSpriteBundle().
-			AddSprite("props/statue.png", true).
+			AddSprite("images/props/statue.png", true).
 			WithOffset(vector.Two{X: -17, Y: -60}),
 	)
 }
