@@ -12,7 +12,7 @@ var ExamplePlayerComposition = []warehouse.Component{
 	spatial.Components.Position,
 	client.Components.SpriteBundle,
 	spatial.Components.Direction,
-	input.Components.InputBuffer,
+	input.Components.ActionBuffer,
 	client.Components.CameraIndex,
 	spatial.Components.Shape,
 	motion.Components.Dynamics,

@@ -10,10 +10,9 @@ import (
 
 type MusicSystem struct{}
 
-// Note: this a very simple music system that does not account for multiple scenes (will only loop on scene one)
+// Note: this a very simple music system that does not account for multiple scenes
 // Adjust accordingly
 func (sys MusicSystem) Run(lc coldbrew.LocalClient, scene coldbrew.Scene) error {
-	// Setup query and cursor for music
 	musicQuery := warehouse.Factory.NewQuery().And(components.MusicTag)
 	cursor := scene.NewCursor(musicQuery)
 

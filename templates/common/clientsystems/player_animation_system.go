@@ -14,12 +14,12 @@ import (
 type PlayerAnimationSystem struct{}
 
 func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) error {
-	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	cursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 
 	for range cursor.Next() {
-		// Get state
 		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
-		spriteBlueprint := &bundle.Blueprints[0]
+		spriteBlueprint := &bundle.Blueprints[0] // Player entities currently only use one (first) blueprint
+
 		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
 		grounded, onGround := components.OnGroundComponent.GetFromCursorSafe(cursor)
 		if grounded {

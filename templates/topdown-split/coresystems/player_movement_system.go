@@ -13,21 +13,21 @@ import (
 type PlayerMovementSystem struct{}
 
 func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Get all entities with input buffers (players)
-	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	cursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
+
 	for range cursor.Next() {
-		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
+		incomingInputs := input.Components.ActionBuffer.GetFromCursor(cursor)
 		pos := spatial.Components.Position.GetFromCursor(cursor)
 		direction := spatial.Components.Direction.GetFromCursor(cursor)
 		direction8 := components.DirectionEightComponent.GetFromCursor(cursor)
 
 		// Process horizontal movement
-		_, pressedLeft := incomingInputs.ConsumeInput(actions.Left)
-		_, pressedRight := incomingInputs.ConsumeInput(actions.Right)
+		_, pressedLeft := incomingInputs.ConsumeAction(actions.Left)
+		_, pressedRight := incomingInputs.ConsumeAction(actions.Right)
 
 		// Process vertical movement
-		_, pressedUp := incomingInputs.ConsumeInput(actions.Up)
-		_, pressedDown := incomingInputs.ConsumeInput(actions.Down)
+		_, pressedUp := incomingInputs.ConsumeAction(actions.Up)
+		_, pressedDown := incomingInputs.ConsumeAction(actions.Down)
 
 		// Calculate movement vector
 		moveX := 0.0
@@ -91,7 +91,6 @@ func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
 			}
 		}
 
-		// Get player entity
 		playerEn, err := cursor.CurrentEntity()
 		if err != nil {
 			return err
@@ -99,8 +98,6 @@ func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
 
 		// Track movement
 		if movingVertical || movingHorizontal {
-			// Avoid/Cannot mutate during cursor iteration (locked storage)
-			// Use Enqueue API
 			playerEn.EnqueueAddComponent(components.IsMovingComponent)
 		} else {
 			playerEn.EnqueueRemoveComponent(components.IsMovingComponent)

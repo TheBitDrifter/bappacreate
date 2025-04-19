@@ -18,7 +18,7 @@ func NewPlayer(sto warehouse.Storage) error {
 		spatial.NewRectangle(18, 58),
 		motion.NewDynamics(10),
 		spatial.NewDirectionRight(),
-		input.InputBuffer{ReceiverIndex: 0},
+		input.ActionBuffer{ReceiverIndex: 0},
 		client.CameraIndex(0),
 	)
 	if err != nil {

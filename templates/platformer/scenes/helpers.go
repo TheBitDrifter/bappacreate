@@ -14,19 +14,19 @@ import (
 )
 
 // NewPlayer creates a player entity for the scene
-func NewPlayer(sto warehouse.Storage) error {
+func NewPlayer(x, y float64, sto warehouse.Storage) error {
 	playerArchetype, err := sto.NewOrExistingArchetype(
 		PlayerComposition...,
 	)
 	err = playerArchetype.Generate(1,
-		spatial.NewPosition(180, 180),
+		spatial.NewPosition(x, y),
 		spatial.NewRectangle(18, 58),
 		motion.NewDynamics(10),
 		spatial.NewDirectionRight(),
-		input.InputBuffer{ReceiverIndex: 0},
+		input.ActionBuffer{ReceiverIndex: 0},
 		client.CameraIndex(0),
 		client.NewSpriteBundle().
-			AddSprite("characters/box_man_sheet.png", true).
+			AddSprite("images/characters/box_man_sheet.png", true).
 			WithAnimations(animations.IdleAnimation, animations.RunAnimation, animations.FallAnimation, animations.JumpAnimation).
 			SetActiveAnimation(animations.IdleAnimation).
 			WithOffset(vector.Two{X: -72, Y: -59}).
@@ -86,7 +86,7 @@ func NewFloor(sto warehouse.Storage, y float64) error {
 		spatial.NewPosition(1500, y),
 		spatial.NewRectangle(4000, 50),
 		client.NewSpriteBundle().
-			AddSprite("terrain/floor.png", true).
+			AddSprite("images/terrain/floor.png", true).
 			WithOffset(vector.Two{X: -1500, Y: -25}),
 	)
 }
@@ -111,7 +111,7 @@ func NewBlock(sto warehouse.Storage, x, y float64) error {
 		spatial.NewPosition(x, y),
 		spatial.NewRectangle(64, 75),
 		client.NewSpriteBundle().
-			AddSprite("terrain/block.png", true).
+			AddSprite("images/terrain/block.png", true).
 			WithOffset(vector.Two{X: -33, Y: -38}),
 	)
 }
@@ -127,7 +127,7 @@ func NewPlatform(sto warehouse.Storage, x, y float64) error {
 		// Triangles for one way platform
 		spatial.NewTriangularPlatform(144, 16),
 		client.NewSpriteBundle().
-			AddSprite("terrain/platform.png", true).
+			AddSprite("images/terrain/platform.png", true).
 			WithOffset(vector.Two{X: -72, Y: -8}),
 	)
 }
@@ -144,7 +144,7 @@ func NewPlatformRotated(sto warehouse.Storage, x, y, rotation float64) error {
 		// Triangles for one way platform
 		spatial.NewTriangularPlatform(144, 16),
 		client.NewSpriteBundle().
-			AddSprite("terrain/platform.png", true).
+			AddSprite("images/terrain/platform.png", true).
 			WithOffset(vector.Two{X: -72, Y: -8}),
 	)
 }
@@ -167,7 +167,7 @@ func NewRamp(sto warehouse.Storage, x, y float64) error {
 		spatial.NewPosition(x, y),
 		spatial.NewDoubleRamp(250, 46, 0.2),
 		client.NewSpriteBundle().
-			AddSprite("terrain/ramp.png", true).
+			AddSprite("images/terrain/ramp.png", true).
 			WithOffset(vector.Two{X: -125, Y: -22}),
 	)
 }
@@ -175,17 +175,17 @@ func NewRamp(sto warehouse.Storage, x, y float64) error {
 // NewCityBackground creates the city parallax background entities
 func NewCityBackground(sto warehouse.Storage) error {
 	return blueprint.NewParallaxBackgroundBuilder(sto).
-		AddLayer("backgrounds/city/sky.png", 0.025, 0.025).
-		AddLayer("backgrounds/city/far.png", 0.025, 0.05).
-		AddLayer("backgrounds/city/mid.png", 0.1, 0.1).
-		AddLayer("backgrounds/city/near.png", 0.2, 0.2).
+		AddLayer("images/backgrounds/city/sky.png", 0.025, 0.025).
+		AddLayer("images/backgrounds/city/far.png", 0.025, 0.05).
+		AddLayer("images/backgrounds/city/mid.png", 0.1, 0.1).
+		AddLayer("images/backgrounds/city/near.png", 0.2, 0.2).
 		Build()
 }
 
 // NewSkyBackground creates a sky background entity
 func NewSkyBackground(sto warehouse.Storage) error {
 	return blueprint.NewParallaxBackgroundBuilder(sto).
-		AddLayer("backgrounds/city/sky.png", 0.05, 0.05).
+		AddLayer("images/backgrounds/city/sky.png", 0.05, 0.05).
 		Build()
 }
 
@@ -195,7 +195,7 @@ func NewJazzMusic(sto warehouse.Storage) error {
 	if err != nil {
 		return err
 	}
-	return musicArche.Generate(1, client.NewSoundBundle().AddSoundFromPath("music.wav"))
+	return musicArche.Generate(1, client.NewSoundBundle().AddSoundFromPath("sounds/music.wav"))
 }
 
 // NewCollisionPlayerTransfer creates an collidable entity/shape that will transfer the player

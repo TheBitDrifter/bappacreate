@@ -17,7 +17,7 @@ var SceneTwo = Scene{
 }
 
 // Scene two is a simple night sky and floor
-func sceneTwoPlan(height, width int, sto warehouse.Storage) error {
+func sceneTwoPlan(width, height int, sto warehouse.Storage) error {
 	// Load the image tiles
 	err := ldtk.DATA.LoadTiles(SCENE_TWO_NAME, sto)
 	if err != nil {

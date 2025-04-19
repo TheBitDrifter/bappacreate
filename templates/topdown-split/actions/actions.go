@@ -6,8 +6,8 @@ import (
 
 // Standard Movement Actions
 var (
-	Left  = input.NewInput()
-	Right = input.NewInput()
-	Up    = input.NewInput()
-	Down  = input.NewInput()
+	Left  = input.NewAction()
+	Right = input.NewAction()
+	Up    = input.NewAction()
+	Down  = input.NewAction()
 )

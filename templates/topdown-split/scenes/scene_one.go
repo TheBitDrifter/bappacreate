@@ -15,15 +15,15 @@ var SceneOne = Scene{
 	Height: 400,
 }
 
-func sceneOnePlan(height, width int, sto warehouse.Storage) error {
+func sceneOnePlan(width, height int, sto warehouse.Storage) error {
 	// Create the players
-	err := NewPlayers(sto, 2)
+	err := NewPlayer(180, 180, sto, 2)
 	if err != nil {
 		return err
 	}
 
 	// Background
-	err = blueprint.CreateStillBackground(sto, "backgrounds/scene_one.png", vector.Two{X: 140, Y: 0})
+	err = blueprint.CreateStillBackground(sto, "images/backgrounds/scene_one.png", vector.Two{X: 140, Y: 0})
 	if err != nil {
 		return err
 	}

@@ -31,7 +31,6 @@ type CommonFileMapping struct {
 	DestinationPath map[string]string // Map of template name → destination path within project
 }
 
-// Define the import paths for each template
 var templateImportPaths = map[string]string{
 	"platformer":            "github.com/TheBitDrifter/bappacreate/templates/platformer",
 	"platformer-split":      "github.com/TheBitDrifter/bappacreate/templates/platformer-split",
@@ -42,7 +41,6 @@ var templateImportPaths = map[string]string{
 // Common import path that will be replaced in all files
 var commonImportPattern = "github.com/TheBitDrifter/bappacreate/templates/common"
 
-// Define all the shared files that should be moved from common to each template
 var commonFiles = []CommonFileMapping{
 	// Core Systems
 	{
@@ -316,6 +314,7 @@ func printUsage() {
 	fmt.Println("  platformer-split - A platformer game with split-screen co-op support")
 	fmt.Println("  platformer-ldtk - A platformer game with LDtk level editor support")
 	fmt.Println("  platformer-split-ldtk - A platformer game with split-screen co-op and LDtk support")
+	fmt.Println("  platformer-netcode - A networked platformer game with client/server architecture")
 	fmt.Println("  topdown         - A top-down perspective game (default)")
 	fmt.Println("  topdown-split   - A top-down game with split-screen co-op support")
 	fmt.Println("  sandbox         - An open sandbox game environment")
@@ -349,10 +348,16 @@ func createProject(projectName, templateName string) {
 
 	// Make sure the template exists
 	templatePath := filepath.Join("templates", templateName)
+
 	_, err = fs.Stat(templateFS, templatePath)
 	if err != nil {
-		fmt.Printf("Error: Template '%s' not found\n", templateName)
+		fmt.Printf("Error: Template '%s' not found\n", templateName, err)
 		os.Exit(1)
+	}
+
+	if templateName == "platformer-netcode" {
+		handleNetcodeTemplate(projectNameOnly, username, moduleName)
+		return
 	}
 
 	// Create additional directories that might not be in the templates

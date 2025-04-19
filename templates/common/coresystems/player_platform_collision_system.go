@@ -14,9 +14,6 @@ import (
 
 // PlayerPlatformCollisionSystem handles collisions between players and one-way platforms.
 // It tracks historical player positions to determine if the player approached from above.
-// This is necessary since collision detection at a discrete step doesn't provide approach direction.o
-//
-// It is one of the more 'dense' bits of the template/example.
 type PlayerPlatformCollisionSystem struct {
 	// Map of player entity ID to their position history
 	playerPositionHistory map[uint64][]vector.Two
@@ -26,37 +23,32 @@ type PlayerPlatformCollisionSystem struct {
 // NewPlayerPlatformCollisionSystem creates a new collision system with initialized position tracking.
 // It uses a pointer because the system is not pure and must retain its state.
 func NewPlayerPlatformCollisionSystem() *PlayerPlatformCollisionSystem {
-	trackCount := 15 // higher count == more tunneling protection == higher cost
+	const TRACK_COUNT = 60 // higher count == more tunneling protection == higher cost
 	return &PlayerPlatformCollisionSystem{
 		playerPositionHistory: make(map[uint64][]vector.Two),
-		maxPositionsToTrack:   trackCount,
+		maxPositionsToTrack:   TRACK_COUNT,
 	}
 }
 
 func (s *PlayerPlatformCollisionSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Create cursors
 	platformTerrainQuery := warehouse.Factory.NewQuery().And(components.PlatformTag)
 	platformCursor := scene.NewCursor(platformTerrainQuery)
-	playerCursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	playerCursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 
-	// Outer loop is platforms
 	for range platformCursor.Next() {
-		// Inner is players
 		for range playerCursor.Next() {
-			// Get player entity ID to track positions independently for each player
 			playerEntity, err := playerCursor.CurrentEntity()
 			if err != nil {
 				return err
 			}
 			playerID := uint64(playerEntity.ID())
 
-			// Delegate to helper
 			err = s.resolve(scene, platformCursor, playerCursor, playerID)
 			if err != nil {
 				return err
 			}
 
-			// Track the full position (X and Y) for this specific player
+			// Track the position
 			playerPos := spatial.Components.Position.GetFromCursor(playerCursor)
 			s.trackPosition(playerID, playerPos.Two)
 		}
@@ -65,23 +57,19 @@ func (s *PlayerPlatformCollisionSystem) Run(scene blueprint.Scene, dt float64) e
 }
 
 func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformCursor, playerCursor *warehouse.Cursor, playerID uint64) error {
-	// Get the player state
 	playerShape := spatial.Components.Shape.GetFromCursor(playerCursor)
 	playerPosition := spatial.Components.Position.GetFromCursor(playerCursor)
 	playerDynamics := motion.Components.Dynamics.GetFromCursor(playerCursor)
 
-	// Get the platform state
 	platformShape := spatial.Components.Shape.GetFromCursor(platformCursor)
 	platformPosition := spatial.Components.Position.GetFromCursor(platformCursor)
 	platformRotation := float64(*spatial.Components.Rotation.GetFromCursor(platformCursor))
 	platformDynamics := motion.Components.Dynamics.GetFromCursor(platformCursor)
 
-	// Check for collision
 	if ok, collisionResult := spatial.Detector.Check(
 		*playerShape, *platformShape, playerPosition.Two, platformPosition.Two,
 	); ok {
 
-		// Check if were ignoring the current platform (dropping down)
 		ignoringPlatforms, ignorePlatform := components.IgnorePlatformComponent.GetFromCursorSafe(playerCursor)
 
 		platformEntity, err := platformCursor.CurrentEntity()
@@ -97,7 +85,7 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 		}
 
 		// Check if any of the past player positions indicate the player was above the platform
-		platformTop := platformShape.Polygon.WorldVertices[0].Y
+		platformTop := platformShape.Polygon.WorldVertices[0].Y // Just using top left vert for non rotated rect platforms
 		var playerWasAbove bool
 
 		// Checking for 'above' is much easier when the edge is flat (fixed y value)
@@ -108,12 +96,11 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 		} else {
 			playerWasAbove = s.checkAnyPlayerPositionWasAboveAdvanced(
 				playerID,
-				// The top edge for the triangle platforms is always 0,1
+				// The top edge for a rotated triangle platform is always 0,1
 				[]vector.Two{
 					platformShape.Polygon.WorldVertices[0],
 					platformShape.Polygon.WorldVertices[1],
 				},
-				// Pass the AAB dimensions to calc the players bottom points along with their historical positions
 				playerShape.LocalAAB.Width, playerShape.LocalAAB.Height,
 			)
 		}
@@ -133,10 +120,9 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 				collisionResult,
 			)
 
-			// Standard onGround handling
+			// Ground state handling
 			currentTick := scene.CurrentTick()
 
-			// If not grounded, enqueue onGround with values
 			playerAlreadyGrounded, onGround := components.OnGroundComponent.GetFromCursorSafe(playerCursor)
 
 			if !playerAlreadyGrounded {
@@ -150,7 +136,6 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 				}
 			} else {
 
-				// Otherwise update the existing OnGround
 				onGround.LastTouch = scene.CurrentTick()
 				onGround.SlopeNormal = collisionResult.Normal
 			}
@@ -187,7 +172,6 @@ func (s *PlayerPlatformCollisionSystem) resolve(scene blueprint.Scene, platformC
 	return nil
 }
 
-// trackPosition adds a position to the history and ensures only the last N are kept for a specific player
 func (s *PlayerPlatformCollisionSystem) trackPosition(playerID uint64, pos vector.Two) {
 	// Initialize the position history for this player if it doesn't exist
 	if _, exists := s.playerPositionHistory[playerID]; !exists {
@@ -247,6 +231,7 @@ func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAboveAdvanced(
 	if edgeNormal.ScalarProduct(worldUp) < 0 {
 		edgeNormal = edgeNormal.Scale(-1)
 	}
+
 	for _, historicalPos := range positions {
 		halfHeight := playerHeight / 2
 		halfWidth := playerWidth / 2
@@ -265,7 +250,6 @@ func (s *PlayerPlatformCollisionSystem) checkAnyPlayerPositionWasAboveAdvanced(
 			const minAbove = 1.0
 			const maxAbove = 75.0
 
-			// Check if the point is geometrically "above" the finite edge segment
 			isAbove := distanceAlongNormal >= minAbove &&
 				distanceAlongNormal < maxAbove &&
 				projectionOnEdge >= -margin &&

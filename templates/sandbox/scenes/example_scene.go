@@ -13,6 +13,6 @@ var SceneOne = Scene{
 	Height: 360,
 }
 
-func examplePlan(height, width int, sto warehouse.Storage) error {
+func examplePlan(width, height int, sto warehouse.Storage) error {
 	return NewPlayer(sto)
 }

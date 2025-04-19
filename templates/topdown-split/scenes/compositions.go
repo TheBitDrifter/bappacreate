@@ -19,7 +19,7 @@ var PlayerComposition = []warehouse.Component{
 	spatial.Components.Position,
 	motion.Components.Dynamics,
 	client.Components.SpriteBundle,
-	input.Components.InputBuffer,
+	input.Components.ActionBuffer,
 	client.Components.CameraIndex,
 	spatial.Components.Shape,
 	client.Components.SoundBundle,
