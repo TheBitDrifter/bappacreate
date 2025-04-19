@@ -3,8 +3,8 @@ package scenes
 import (
 	"log"
 
-	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/ldtk"
 	"github.com/TheBitDrifter/bappa/warehouse"
+	"github.com/TheBitDrifter/bappacreate/templates/platformer-split-ldtk/ldtk"
 )
 
 const SCENE_TWO_NAME = "Scene2"
@@ -17,7 +17,7 @@ var SceneTwo = Scene{
 }
 
 // Scene two is a simple night sky and floor
-func sceneTwoPlan(height, width int, sto warehouse.Storage) error {
+func sceneTwoPlan(width, height int, sto warehouse.Storage) error {
 	// Load the image tiles
 	err := ldtk.DATA.LoadTiles(SCENE_TWO_NAME, sto)
 	if err != nil {

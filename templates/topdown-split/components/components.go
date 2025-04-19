@@ -4,7 +4,6 @@ import (
 	"github.com/TheBitDrifter/bappa/warehouse"
 )
 
-// Here we convert our types into components for the ECS
 var (
 	PlayerSceneTransferComponent = warehouse.FactoryNewComponent[PlayerSceneTransfer]()
 	DirectionEightComponent      = warehouse.FactoryNewComponent[DirectionEight]()

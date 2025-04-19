@@ -4,4 +4,4 @@ import (
 	"github.com/TheBitDrifter/bappa/blueprint/input"
 )
 
-var ExampleAction = input.NewInput()
+var ExampleAction = input.NewAction()

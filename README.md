@@ -1,6 +1,7 @@
 # Bappa Game Template Generator
 
 A simple tool for generating new Bappa game projects from templates.
+<img width="800" alt="lol" src="https://github.com/user-attachments/assets/1cb4159b-5761-4635-b0f3-040b27264736" />
 
 ## Overview
 
@@ -94,6 +95,12 @@ Create a sandbox game:
 bappacreate johndoe/my-sandbox-world --template sandbox
 ```
 
+Create a networked platformer game:
+
+```bash
+bappacreate johndoe/my-netcode-game --template platformer-netcode
+```
+
 ## Available Templates
 
 | Template | Description |
@@ -104,13 +111,31 @@ bappacreate johndoe/my-sandbox-world --template sandbox
 | `platformer-split` | A platformer game with split-screen co-op support |
 | `platformer-ldtk` | A platformer game with LDtk level editor support |
 | `platformer-split-ldtk` | A platformer game with split-screen co-op and LDtk support |
+| `platformer-netcode` | A platformer game with multiplayer netcode support |
 | `sandbox` | An open sandbox game environment |
+
+### Special Note for Netcode Template
+
+For the `platformer-netcode` template, you need to access the template directory. When installing via `go install`, you'll need to clone the repository:
+
+```bash
+git clone https://github.com/TheBitDrifter/bappacreate.git
+cd bappacreate
+go build .
+./bappacreate username/project-name --template platformer-netcode
+```
+
+You can also skip using bappacreate all together and simple grab the files at `/templates/platformer-netcode`.
+
+Since the server/client are distinct modules(with their own deps and .mod file) they cannot be embedded as part of the
+bappacreate binary, making it a nuisance to implement via this installer.
 
 ### Template Structure
 
 - **Standard Templates** (`topdown`, `platformer`, `sandbox`): Single-player games with a standard view.
 - **Split Templates** (`topdown-split`, `platformer-split`, `platformer-split-ldtk`): Games with split-screen co-op multiplayer support, allowing two or more players to play simultaneously on the same screen.
 - **LDtk Templates** (`platformer-ldtk`, `platformer-split-ldtk`): Games that support the LDtk level editor for easier level design.
+- **Netcode Template** (`platformer-netcode`): A client/server architecture for multiplayer networked games.
 
 ## Project Structure
 
@@ -128,6 +153,21 @@ my-awesome-game/
 └── main.go
 ```
 
+For the netcode template, a different structure is created:
+
+```
+my-netcode-game/
+├── client/         # Client-side code
+├── server/         # Server-side code
+├── shared/         # Code shared between client and server
+├── sharedclient/   # Code shared between client and standalone
+│   └── assets/
+│       ├── images/
+│       └── sounds/
+├── bot/            # AI bot implementation
+└── standalone/     # Single-player version
+```
+
 ## After Creating a Project
 
 After creating your project, navigate to the project directory and run it:
@@ -137,13 +177,24 @@ cd my-awesome-game
 go run .
 ```
 
-## Dependencies
+For netcode projects:
 
-The generator automatically sets up the following dependencies:
+```bash
+# Run server
+cd my-netcode-game/server
+go mod tidy
+go run .
 
-- github.com/TheBitDrifter/bappa/coldbrew
-- github.com/TheBitDrifter/blueprint
-- github.com/TheBitDrifter/warehouse
+# Run client in another terminal
+cd my-netcode-game/client
+go mod tidy
+go run .
+
+# Or run standalone version
+cd my-netcode-game/standalone
+go mod tidy
+go run .
+```
 
 ## Contributing
 

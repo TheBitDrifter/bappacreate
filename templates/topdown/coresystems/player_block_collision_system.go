@@ -11,16 +11,12 @@ import (
 type PlayerBlockCollisionSystem struct{}
 
 func (s PlayerBlockCollisionSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Create cursors
 	blockTerrainQuery := warehouse.Factory.NewQuery().And(components.BlockTerrainTag)
 	blockTerrainCursor := scene.NewCursor(blockTerrainQuery)
-	playerCursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	playerCursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 
-	// Outer loop is blocks
 	for range blockTerrainCursor.Next() {
-		// Inner is players
 		for range playerCursor.Next() {
-			// Delegate to helper
 			err := s.resolve(scene, blockTerrainCursor, playerCursor)
 			if err != nil {
 				return err
@@ -30,14 +26,11 @@ func (s PlayerBlockCollisionSystem) Run(scene blueprint.Scene, dt float64) error
 	return nil
 }
 
-// Main collision logic
 func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, playerCursor *warehouse.Cursor) error {
-	// Get the player pos, shape, and dynamics
 	playerPosition := spatial.Components.Position.GetFromCursor(playerCursor)
 	playerShape := spatial.Components.Shape.GetFromCursor(playerCursor)
 	playerDynamics := motion.Components.Dynamics.GetFromCursor(playerCursor)
 
-	// Get the block pos, shape, and dynamics
 	blockPosition := spatial.Components.Position.GetFromCursor(blockCursor)
 	blockShape := spatial.Components.Shape.GetFromCursor(blockCursor)
 	blockDynamics := motion.Components.Dynamics.GetFromCursor(blockCursor)

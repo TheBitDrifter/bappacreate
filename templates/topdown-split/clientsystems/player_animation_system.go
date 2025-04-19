@@ -15,9 +15,8 @@ func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 	const PLAYER_WALK_SHEET_INDEX = 1
 
 	// Iterate through players
-	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	cursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 	for range cursor.Next() {
-		// Get components
 		direction8 := components.DirectionEightComponent.GetFromCursor(cursor)
 		bundle := client.Components.SpriteBundle.GetFromCursor(cursor)
 		playerMoving := components.IsMovingComponent.CheckCursor(cursor)

@@ -10,17 +10,13 @@ import (
 type IgnorePlatformClearingSystem struct{}
 
 func (IgnorePlatformClearingSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Query any entity that has IgnorePlatform
 	ignorePlatformQuery := warehouse.Factory.NewQuery().And(components.IgnorePlatformComponent)
 	ignorePlatformCursor := scene.NewCursor(ignorePlatformQuery)
 
-	// Define the expiration time in ticks
-	const expirationTicks = 15
+	const EXPIRATION_TICKS = 15
 
-	// Iterate through matched entities
 	for range ignorePlatformCursor.Next() {
 
-		// Get the IgnorePlatform component state
 		ignorePlatform := components.IgnorePlatformComponent.GetFromCursor(ignorePlatformCursor)
 		currentTick := scene.CurrentTick()
 
@@ -35,7 +31,7 @@ func (IgnorePlatformClearingSystem) Run(scene blueprint.Scene, dt float64) error
 			}
 
 			// Check if this entry has expired
-			if currentTick-ignorePlatform.Items[i].LastActive > expirationTicks {
+			if currentTick-ignorePlatform.Items[i].LastActive > EXPIRATION_TICKS {
 
 				// Clear this specific entry by setting its EntityID to 0
 				ignorePlatform.Items[i].EntityID = 0

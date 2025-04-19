@@ -18,11 +18,10 @@ func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) 
 	playersWithCamera := warehouse.Factory.NewQuery()
 	playersWithCamera.And(
 		spatial.Components.Position,
-		input.Components.InputBuffer,
+		input.Components.ActionBuffer,
 		client.Components.CameraIndex,
 	)
 
-	// Iterate
 	playerCursor := scene.NewCursor(playersWithCamera)
 	for range playerCursor.Next() {
 
@@ -57,7 +56,6 @@ func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) 
 	return nil
 }
 
-// lockCameraToSceneBoundaries constrains camera position within scene boundaries
 func lockCameraToSceneBoundaries(cam coldbrew.Camera, scene coldbrew.Scene, cameraPos *vector.Two) {
 	sceneWidth := scene.Width()
 	sceneHeight := scene.Height()

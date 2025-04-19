@@ -11,17 +11,14 @@ import (
 type PlayerBlockCollisionSystem struct{}
 
 func (s PlayerBlockCollisionSystem) Run(scene blueprint.Scene, dt float64) error {
-	// Create cursors
 	blockTerrainQuery := warehouse.Factory.NewQuery().And(components.BlockTerrainTag)
 	blockTerrainCursor := scene.NewCursor(blockTerrainQuery)
-	playerCursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	playerCursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 
-	// Outer loop is blocks
 	for range blockTerrainCursor.Next() {
-		// Inner is players
 		for range playerCursor.Next() {
 			// Delegate to helper
-			err := s.resolve(scene, blockTerrainCursor, playerCursor) // Now pass in the scene
+			err := s.resolve(scene, blockTerrainCursor, playerCursor)
 			if err != nil {
 				return err
 			}
@@ -30,28 +27,20 @@ func (s PlayerBlockCollisionSystem) Run(scene blueprint.Scene, dt float64) error
 	return nil
 }
 
-// Main collision logic
 func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, playerCursor *warehouse.Cursor) error {
-	// Get the player pos, shape, and dynamics
 	playerPosition := spatial.Components.Position.GetFromCursor(playerCursor)
 	playerShape := spatial.Components.Shape.GetFromCursor(playerCursor)
 	playerDynamics := motion.Components.Dynamics.GetFromCursor(playerCursor)
+	playerAlreadyGrounded, onGround := components.OnGroundComponent.GetFromCursorSafe(playerCursor)
 
-	// Get the block pos, shape, and dynamics
 	blockPosition := spatial.Components.Position.GetFromCursor(blockCursor)
 	blockShape := spatial.Components.Shape.GetFromCursor(blockCursor)
 	blockDynamics := motion.Components.Dynamics.GetFromCursor(blockCursor)
-
-	// Check grounded state
-	playerAlreadyGrounded, onGround := components.OnGroundComponent.GetFromCursorSafe(playerCursor)
 
 	// Check for a collision
 	if ok, collisionResult := spatial.Detector.Check(
 		*playerShape, *blockShape, playerPosition.Two, blockPosition.Two,
 	); ok {
-
-		playerOnTopOfBlock := collisionResult.IsTopB()
-		blockOnTopOfPlayer := collisionResult.IsTop()
 
 		// Determine if ground is sloped
 		n := collisionResult.Normal
@@ -64,6 +53,9 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 		}
 
 		// Prevents snapping on AAB corner transitions/collisions
+		playerOnTopOfBlock := collisionResult.IsTopB()
+		blockOnTopOfPlayer := collisionResult.IsTop()
+
 		if playerOnTopOfBlock && playerDynamics.Vel.Y < 0 && !isSloped {
 			return nil
 		}

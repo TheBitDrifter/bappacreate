@@ -14,8 +14,8 @@ var SceneOne = Scene{
 }
 
 // Scene one is a city scape
-func sceneOnePlan(height, width int, sto warehouse.Storage) error {
-	err := NewPlayers(sto, 2)
+func sceneOnePlan(width, height int, sto warehouse.Storage) error {
+	err := NewPlayers(100, 180, sto, 2)
 	if err != nil {
 		return err
 	}

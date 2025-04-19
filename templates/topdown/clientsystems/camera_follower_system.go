@@ -14,15 +14,13 @@ import (
 type CameraFollowerSystem struct{}
 
 func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) error {
-	// Query players who have a camera (camera index component)
 	playersWithCamera := warehouse.Factory.NewQuery()
 	playersWithCamera.And(
 		spatial.Components.Position,
-		input.Components.InputBuffer,
+		input.Components.ActionBuffer,
 		client.Components.CameraIndex,
 	)
 
-	// Iterate
 	playerCursor := scene.NewCursor(playersWithCamera)
 	for range playerCursor.Next() {
 
@@ -44,9 +42,11 @@ func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) 
 
 		// Set the camera position towards the matched player position with lerp (optional)
 		smoothness := 0.04
+
 		cameraScenePosition.X, cameraScenePosition.Y = lerpVec(
 			cameraScenePosition.X, cameraScenePosition.Y, targetX, targetY, smoothness,
 		)
+
 		cameraScenePosition.X = math.Round(cameraScenePosition.X)
 		cameraScenePosition.Y = math.Round(cameraScenePosition.Y)
 
@@ -56,7 +56,6 @@ func (CameraFollowerSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene) 
 	return nil
 }
 
-// lockCameraToSceneBoundaries constrains camera position within scene boundaries
 func lockCameraToSceneBoundaries(cam coldbrew.Camera, scene coldbrew.Scene, cameraPos *vector.Two) {
 	sceneWidth := scene.Width()
 	sceneHeight := scene.Height()
@@ -83,7 +82,6 @@ func lockCameraToSceneBoundaries(cam coldbrew.Camera, scene coldbrew.Scene, came
 	}
 }
 
-// Lerp func for smoothish (not perfect) camera
 func lerpVec(startX, startY, endX, endY, t float64) (float64, float64) {
 	dx := endX - startX
 	dy := endY - startY

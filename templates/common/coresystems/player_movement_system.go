@@ -5,7 +5,6 @@ import (
 
 	"github.com/TheBitDrifter/bappa/blueprint"
 	"github.com/TheBitDrifter/bappa/blueprint/input"
-	"github.com/TheBitDrifter/bappa/blueprint/vector"
 	"github.com/TheBitDrifter/bappa/tteokbokki/motion"
 	"github.com/TheBitDrifter/bappa/tteokbokki/spatial"
 	"github.com/TheBitDrifter/bappa/warehouse"
@@ -18,10 +17,6 @@ import (
 // and platform drop-through functionality.
 type PlayerMovementSystem struct{}
 
-// Run executes all movement systems in the correct order:
-// 1. Horizontal movement (including slope interactions)
-// 2. Jumping (with coyote time and input buffering)
-// 3. Down input handling (for platform drop-through)
 func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
 	sys.handleHorizontal(scene)
 	sys.handleJump(scene)
@@ -33,30 +28,26 @@ func (sys PlayerMovementSystem) Run(scene blueprint.Scene, dt float64) error {
 // - Flat ground movement
 // - Uphill/downhill slope movement with proper tangent calculations
 func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
-	// Constants
 	const (
-		speedX    = 120.0 // Player's horizontal movement speed
-		snapForce = 40.0  // Downward force to keep player attached to slopes
+		SPEED_X    = 120.0 // Player's horizontal movement speed
+		SNAP_FORCE = 40.0  // Downward force to keep player attached to slopes
 	)
 
-	// Query all entities with input buffers
-	cursor := scene.NewCursor(blueprint.Queries.InputBuffer)
+	cursor := scene.NewCursor(blueprint.Queries.ActionBuffer)
 	currentTick := scene.CurrentTick()
 
 	for range cursor.Next() {
-		// --- Gather required components ---
-		dyn := motion.Components.Dynamics.GetFromCursor(cursor)              // Physics properties
-		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor) // User inputs
-		direction := spatial.Components.Direction.GetFromCursor(cursor)      // Facing direction
+		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
+		incomingInputs := input.Components.ActionBuffer.GetFromCursor(cursor)
+		direction := spatial.Components.Direction.GetFromCursor(cursor)
 
-		// --- Process left/right inputs ---
-		// Check and consume directional inputs
-		_, pressedLeft := incomingInputs.ConsumeInput(actions.Left)
+		// Check and consume directional actions
+		_, pressedLeft := incomingInputs.ConsumeAction(actions.Left)
 		if pressedLeft {
 			direction.SetLeft()
 		}
 
-		_, pressedRight := incomingInputs.ConsumeInput(actions.Right)
+		_, pressedRight := incomingInputs.ConsumeAction(actions.Right)
 		if pressedRight {
 			direction.SetRight()
 		}
@@ -64,41 +55,36 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 		// Track if player is attempting to move horizontally this frame
 		isMovingHorizontal := pressedLeft || pressedRight
 
-		// --- Check ground status ---
 		// First check if the OnGroundComponent exists and get its value safely
 		isGroundComponentPresent, onGround := components.OnGroundComponent.GetFromCursorSafe(cursor)
 		isGrounded := isGroundComponentPresent && currentTick-1 == onGround.LastTouch
 
-		// Default to airborne movement if no ground component exists
+		// Handle Airborne:
 		if !isGrounded {
-			// Simple air movement - just move in pressed direction or stop
 			if isMovingHorizontal {
-				dyn.Vel.X = speedX * direction.AsFloat()
+				dyn.Vel.X = SPEED_X * direction.AsFloat()
 			}
 			continue
 		}
 
-		// --- Ground snapping logic ---
-		// Apply small downward force to keep player attached to slopes when grounded
-		// Only applies if player has been on ground for a while and touched ground last tick
-		dyn.Vel.Y = math.Max(dyn.Vel.Y, snapForce) // Apply downward force
+		// Handle Grounded:
 
-		// --- Handle flat ground movement ---
-		// Check if player is on a flat surface (normal pointing straight up)
+		// Apply small downward force to keep player attached to slopes when grounded
+		dyn.Vel.Y = math.Max(dyn.Vel.Y, SNAP_FORCE)
+
+		// Handle flat
 		flat := onGround.SlopeNormal.X == 0 && onGround.SlopeNormal.Y == 1
 		if flat {
-			// Same as air movement on flat ground
 			if isMovingHorizontal {
-				dyn.Vel.X = speedX * direction.AsFloat()
+				dyn.Vel.X = SPEED_X * direction.AsFloat()
 			}
-			continue // Skip slope handling
+			continue
 		}
 
-		// --- Handle slope movement ---
+		// Handle sloped
 		if isMovingHorizontal {
 			// Calculate tangent vector along the slope
-			// The tangent is perpendicular to the normal, so we swap X/Y and negate Y
-			tangent := vector.Two{X: onGround.SlopeNormal.Y, Y: -onGround.SlopeNormal.X}
+			tangent := onGround.SlopeNormal.Perpendicular()
 
 			// Determine if player is moving uphill by checking if direction and normal X have same sign
 			isUphill := (direction.AsFloat() * onGround.SlopeNormal.X) > 0
@@ -108,59 +94,47 @@ func (PlayerMovementSystem) handleHorizontal(scene blueprint.Scene) {
 
 			if isUphill {
 				// When going uphill, only set X velocity and let physics handle Y
-				dyn.Vel.X = slopeDir.X * speedX
+				dyn.Vel.X = slopeDir.X * SPEED_X
 			} else {
 				// When going downhill, help player follow the slope with both X and Y velocities
-				dyn.Vel.X = slopeDir.X * speedX
-
-				// Only apply downward velocity after being on ground for a while
-				// This prevents immediate sliding when just landing on a slope
-				dyn.Vel.Y = slopeDir.Y * speedX
+				dyn.Vel.X = slopeDir.X * SPEED_X
+				dyn.Vel.Y = slopeDir.Y * SPEED_X
 			}
 		}
 	}
 }
 
 // handleJump processes jump inputs with coyote time and input buffering features
-// Coyote time: Player can jump shortly after leaving a platform
-// Input buffering: Jump inputs are remembered and applied when landing
 func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
-	// Constants
 	const (
-		jumpForce        = 320.0 // Upward force applied when jumping
-		coyoteTimeTicks  = 10    // Ticks after leaving ground where jump is still allowed
-		inputBufferTicks = 5     // Ticks before landing where a jump input is remembered
+		JUMP_FORCE           = 320.0 // Upward force applied when jumping
+		COYOTE_TIME_IN_TICKS = 10    // Ticks after leaving ground where jump is still allowed
+		INPUT_BUFFER_TICKS   = 5     // Ticks before landing where a jump input is remembered
 	)
 
-	// Create query for players eligible to jump (have ground and input components)
 	playersEligibleToJumpQuery := warehouse.Factory.NewQuery()
-	playersEligibleToJumpQuery.And(components.OnGroundComponent, input.Components.InputBuffer)
+	playersEligibleToJumpQuery.And(components.OnGroundComponent, input.Components.ActionBuffer)
 
-	// Get all entities that match the query
 	cursor := scene.NewCursor(playersEligibleToJumpQuery)
 	currentTick := scene.CurrentTick()
 
 	for range cursor.Next() {
-		// Get required components
 		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
-		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
+		incomingInputs := input.Components.ActionBuffer.GetFromCursor(cursor)
 
-		// OnGroundComponent is guaranteed to exist because of our query
 		onGround := components.OnGroundComponent.GetFromCursor(cursor)
 
-		// Check for jump input
-		if stampedInput, inputReceived := incomingInputs.ConsumeInput(actions.Jump); inputReceived {
-			// --- Jump Eligibility Checks ---
+		if stampedInput, inputReceived := incomingInputs.ConsumeAction(actions.Jump); inputReceived {
 
 			// Coyote time: Allow jumping within certain ticks of leaving ground
-			playerGroundedWithinCoyoteTime := currentTick-onGround.LastTouch <= coyoteTimeTicks
+			playerGroundedWithinCoyoteTime := currentTick-onGround.LastTouch <= COYOTE_TIME_IN_TICKS
 
 			// Input buffering checks:
-			// 1. Was input received before touching ground?
+			// 1. Was action received before touching ground?
 			jumpInputIsBeforeGroundTouch := stampedInput.Tick <= onGround.LastTouch
-			// 2. Was input within the buffer window?
-			jumpInputWithinBufferWindow := onGround.LastTouch-stampedInput.Tick <= inputBufferTicks
-			// Combined buffer condition
+			// 2. Was action within the buffer window?
+			jumpInputWithinBufferWindow := onGround.LastTouch-stampedInput.Tick <= INPUT_BUFFER_TICKS
+
 			validBufferedJumpInput := jumpInputIsBeforeGroundTouch && jumpInputWithinBufferWindow
 
 			// Direct jump: Input received while already on ground
@@ -170,6 +144,7 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 			playerHasNotJumpedSinceGroundTouch := onGround.LastJump < onGround.LastTouch
 
 			// Player can jump if:
+			//
 			// 1. They haven't jumped since touching ground, AND
 			// 2a. They are in coyote time with a direct input, OR
 			// 2b. They have a valid buffered input from before landing
@@ -177,10 +152,8 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 				((playerGroundedWithinCoyoteTime && directJumpInput) || validBufferedJumpInput)
 
 			if canJump {
-				// Apply upward velocity and acceleration for jump
-				dyn.Vel.Y = -jumpForce
-				dyn.Accel.Y = -jumpForce
-				// Record jump time
+				dyn.Vel.Y = -JUMP_FORCE
+				dyn.Accel.Y = -JUMP_FORCE
 				onGround.LastJump = currentTick
 			}
 		}
@@ -190,15 +163,13 @@ func (PlayerMovementSystem) handleJump(scene blueprint.Scene) {
 // handleDown processes down input for platform drop-through functionality
 // This allows players to press down to fall through one-way platforms
 func (PlayerMovementSystem) handleDown(scene blueprint.Scene) error {
-	// Create query for players eligible to drop (have ground and input components)
 	playersEligibleToDropQuery := warehouse.Factory.NewQuery()
-	playersEligibleToDropQuery.And(components.OnGroundComponent, input.Components.InputBuffer)
+	playersEligibleToDropQuery.And(components.OnGroundComponent, input.Components.ActionBuffer)
 
 	cursor := scene.NewCursor(playersEligibleToDropQuery)
 	currentTick := scene.CurrentTick()
 
 	for range cursor.Next() {
-		// OnGroundComponent is guaranteed to exist because of our query
 		onGround := components.OnGroundComponent.GetFromCursor(cursor)
 
 		// The component exists but were not actually grounded (will be removed soon)
@@ -212,17 +183,15 @@ func (PlayerMovementSystem) handleDown(scene blueprint.Scene) error {
 			continue
 		}
 
-		// Get player entity
 		playerEntity, err := cursor.CurrentEntity()
 		if err != nil {
 			return err
 		}
 
-		// Get input component
-		incomingInputs := input.Components.InputBuffer.GetFromCursor(cursor)
+		incomingInputs := input.Components.ActionBuffer.GetFromCursor(cursor)
 
 		// Check for down action
-		if stampedInput, inputReceived := incomingInputs.ConsumeInput(actions.Down); inputReceived {
+		if stampedInput, inputReceived := incomingInputs.ConsumeAction(actions.Down); inputReceived {
 			// Only process inputs from this tick (ignore buffered inputs)
 			if stampedInput.Tick != currentTick {
 				continue
