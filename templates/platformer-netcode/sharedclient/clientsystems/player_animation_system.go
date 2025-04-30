@@ -23,7 +23,7 @@ func (PlayerAnimationSystem) Run(cli coldbrew.LocalClient, scene coldbrew.Scene)
 		dyn := motion.Components.Dynamics.GetFromCursor(cursor)
 		grounded, onGround := components.OnGroundComponent.GetFromCursorSafe(cursor)
 		if grounded {
-			grounded = scene.CurrentTick()-onGround.LastTouch <= 3 // Slight tolerance for netcode
+			grounded = scene.CurrentTick() == onGround.LastTouch
 		}
 
 		// Player is moving horizontal and grounded (running)

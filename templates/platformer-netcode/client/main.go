@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/TheBitDrifter/bappa/blueprint"
 	"github.com/TheBitDrifter/bappa/coldbrew"
 	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_clientsystems"
 	"github.com/TheBitDrifter/bappa/coldbrew/coldbrew_rendersystems"
@@ -14,6 +13,8 @@ import (
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/sharedclient/assets"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/sharedclient/clientsystems"
 	"github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/sharedclient/rendersystems"
+
+	"github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/shared/coresystems"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -47,7 +48,8 @@ func main() {
 		scenes.SceneOne.Plan,
 		rendersystems.DefaultRenderSystems,
 		clientsystems.DefaultClientSystemsNetworked,
-		[]blueprint.CoreSystem{},
+		// []blueprint.CoreSystem{}, <- for non interpolated use this instead
+		coresystems.DefaultCoreSystems, // <- for interpolation use this
 		scenes.SceneOne.Preload...,
 	)
 	if err != nil {
