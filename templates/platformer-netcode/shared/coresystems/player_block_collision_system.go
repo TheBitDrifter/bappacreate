@@ -48,10 +48,6 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 		vertical := n.X == -1 && n.Y == 0 || n.X == 1 && n.Y == 0
 		isSloped := !horizontal && !vertical
 
-		if playerAlreadyGrounded && onGround.LastTouch != scene.CurrentTick()-1 {
-			playerAlreadyGrounded = false
-		}
-
 		// Prevents snapping on AAB corner transitions/collisions
 		playerOnTopOfBlock := collisionResult.IsTopB()
 		blockOnTopOfPlayer := collisionResult.IsTop()
@@ -105,6 +101,7 @@ func (PlayerBlockCollisionSystem) resolve(scene blueprint.Scene, blockCursor, pl
 				return err
 			}
 		} else {
+
 			onGround.LastTouch = scene.CurrentTick()
 			onGround.SlopeNormal = collisionResult.Normal
 		}

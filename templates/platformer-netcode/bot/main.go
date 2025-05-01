@@ -23,6 +23,9 @@ import (
 
 // Constants for connection and behavior parameters.
 const (
+	BOT_COUNT = 300
+	ADDR      = "localhost"
+
 	// connectionTimeout defines time limit for establishing a connection.
 	connectionTimeout = 5 * time.Second
 	// readDeadline defines time limit for read operations.
@@ -300,12 +303,10 @@ func (b *BotClient) actionLoop() {
 	}
 }
 
-const BOT_COUNT = 120
-
 func main() {
 	// Parse command line flags.
 	numBots := flag.Int("bots", BOT_COUNT, "Number of bot clients to create")
-	serverAddr := flag.String("server", "localhost:8080", "Server address (host:port)")
+	serverAddr := flag.String("server", ADDR+":8080", "Server address (host:port)")
 	flag.Parse()
 
 	log.Printf("--- Bot Swarm Starting ---")

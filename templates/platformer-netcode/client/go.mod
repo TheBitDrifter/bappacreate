@@ -22,7 +22,7 @@ replace github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/shared
 
 require (
 	github.com/TheBitDrifter/bappa/blueprint v0.0.0-20250430200114-8efcc21254f9
-	github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250430200114-8efcc21254f9
+	github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250501003118-59b6d175b975
 	github.com/TheBitDrifter/bappa/warehouse v0.0.0-20250430200114-8efcc21254f9
 	github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/shared v0.0.0-00010101000000-000000000000
 	github.com/TheBitDrifter/bappacreate/templates/platformer-netcode/sharedclient v0.0.0-00010101000000-000000000000
@@ -31,7 +31,7 @@ require (
 
 require (
 	github.com/TheBitDrifter/bappa/drip v0.0.0-20250430200114-8efcc21254f9 // indirect
-	github.com/TheBitDrifter/bappa/environment v0.0.0-20250430200114-8efcc21254f9 // indirect
+	github.com/TheBitDrifter/bappa/environment v0.0.0-20250501003118-59b6d175b975 // indirect
 	github.com/TheBitDrifter/bappa/table v0.0.0-20250430200114-8efcc21254f9 // indirect
 	github.com/TheBitDrifter/bappa/tteokbokki v0.0.0-20250430200114-8efcc21254f9 // indirect
 	github.com/TheBitDrifter/bark v0.0.0-20250302175939-26104a815ed9 // indirect
