@@ -6,6 +6,8 @@ github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250420132432-5606172c9a41 h1:PL
 github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250420132432-5606172c9a41/go.mod h1:j5ZCtGyVS//f9u3O2wTKX4jCJ3ByZoOllXvJ6Kcw7x8=
 github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250430200114-8efcc21254f9 h1:J7I882uoupFXCIx5yC3K/AvmkNujrSVoPPbNZ6ovAaA=
 github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250430200114-8efcc21254f9/go.mod h1:9LsQPLpj0K3C4blE6/dPhE8lP8Z65+Q6yWmVqlaHgos=
+github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250501003118-59b6d175b975 h1:yljjrZS1Py4TyBB/Q806wrxOvxz4z9GcgAfOVQ056OA=
+github.com/TheBitDrifter/bappa/coldbrew v0.0.0-20250501003118-59b6d175b975/go.mod h1:9LsQPLpj0K3C4blE6/dPhE8lP8Z65+Q6yWmVqlaHgos=
 github.com/TheBitDrifter/bappa/drip v0.0.0-20250420132432-5606172c9a41 h1:TyeYIz1CBmhHH50ILPGF4yyLKzF069Ei9WElFV0M0Tc=
 github.com/TheBitDrifter/bappa/drip v0.0.0-20250420132432-5606172c9a41/go.mod h1:ozPQshCYXvGE71MKC6S/Y+vCE8kWjdxSYKEc763HZW0=
 github.com/TheBitDrifter/bappa/drip v0.0.0-20250430200114-8efcc21254f9 h1:cMxIEF3LTr5ldNgtEYSaNVaZCQ8dcm+iIEHJAPGssYY=
@@ -14,6 +16,8 @@ github.com/TheBitDrifter/bappa/environment v0.0.0-20250420132432-5606172c9a41 h1
 github.com/TheBitDrifter/bappa/environment v0.0.0-20250420132432-5606172c9a41/go.mod h1:Kt1WbpF5cboazY4QDusBE2VAtKXdgJOBmGSdVixeMDs=
 github.com/TheBitDrifter/bappa/environment v0.0.0-20250430200114-8efcc21254f9 h1:Ej8ROWPlw9mm51ldPfQ1KlOdZ6ZQJZPKeFO11Lh7ujY=
 github.com/TheBitDrifter/bappa/environment v0.0.0-20250430200114-8efcc21254f9/go.mod h1:Kt1WbpF5cboazY4QDusBE2VAtKXdgJOBmGSdVixeMDs=
+github.com/TheBitDrifter/bappa/environment v0.0.0-20250501003118-59b6d175b975 h1:K4I4drzNNgbUvNH6GE7XTAm0G0V82NdYzROWhqed5tU=
+github.com/TheBitDrifter/bappa/environment v0.0.0-20250501003118-59b6d175b975/go.mod h1:Kt1WbpF5cboazY4QDusBE2VAtKXdgJOBmGSdVixeMDs=
 github.com/TheBitDrifter/bappa/table v0.0.0-20250420132432-5606172c9a41 h1:goyrQ7uv29O5+UqW863Wlp1p/Xwx0ilO69sfn7haL20=
 github.com/TheBitDrifter/bappa/table v0.0.0-20250420132432-5606172c9a41/go.mod h1:PE3smUzTI4pj/+gV8igZtbbXr5QInqwqTChFAirrDXY=
 github.com/TheBitDrifter/bappa/table v0.0.0-20250430200114-8efcc21254f9 h1:XxRaIfTQHRJf8dXQ30NswgNySwUTofCGRmMWIfW5qUc=
